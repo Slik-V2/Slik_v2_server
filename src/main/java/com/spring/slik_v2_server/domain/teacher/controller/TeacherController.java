@@ -19,14 +19,12 @@ public class TeacherController {
     private final TecherService techerService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<String>> signup(@Valid @RequestBody TeacherRequest request) {
-        ApiResponse<String> response = techerService.createTeacher(request);
-        return ResponseEntity.ok(response);
+    public ApiResponse<String> signup(@Valid @RequestBody TeacherRequest request) {
+        return techerService.createTeacher(request);
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<ApiResponse<String>> signin(@RequestBody SignInRequest request) {
-        ApiResponse<String> response = techerService.signin(request);
-        return ResponseEntity.ok(response);
+    public ApiResponse<String> signin(@RequestBody SignInRequest request) {
+        return techerService.signin(request);
     }
 }
