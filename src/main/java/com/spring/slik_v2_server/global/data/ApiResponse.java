@@ -11,18 +11,10 @@ public record ApiResponse<T>(
 		ErrorResponse error
 ) {
 
-	/**
-	 * 성공 응답
-	 * @return 200
- 	 */
 	public static <T> ApiResponse<T> ok(T data) {
 		return new ApiResponse<>(HttpStatus.OK.value(), data, null);
 	}
 
-	/**
-	 * 실패 응답
-	 * @return HttpStatus Codes(3xx, 4xx, 5xx etc..)
- 	 */
 	public static ApiResponse<Void> error(HttpStatus status, ErrorResponse error) {
 		return new ApiResponse<>(status.value(), null, error);
 	}
