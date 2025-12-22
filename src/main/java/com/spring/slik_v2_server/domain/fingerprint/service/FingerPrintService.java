@@ -2,10 +2,10 @@ package com.spring.slik_v2_server.domain.fingerprint.service;
 
 import com.spring.slik_v2_server.domain.fingerprint.dto.request.FingerPrintRequest;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
-import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintErrorCode;
-import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintException;
+import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;
 import com.spring.slik_v2_server.domain.fingerprint.repository.FingerPrintRepository;
 import com.spring.slik_v2_server.global.data.ApiResponse;
+import com.spring.slik_v2_server.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class FingerPrintService {
 	// 지문 등록
 	public ApiResponse<HttpStatus> create(FingerPrintRequest request) {
 		if (!request.studentId().equals("0000") && fingerPrintRepository.existsByStudentId(request.studentId())) {
-			throw new FingerPrintException(FingerPrintErrorCode.STUDENT_ID_ALREADY_EXISTS);
+			throw new ApplicationException(FingerPrintStatusCode.STUDENT_ID_ALREADY_EXISTS);
 		}
 
 		FingerPrint fingerPrint = FingerPrint.builder()
