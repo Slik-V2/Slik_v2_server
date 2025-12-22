@@ -21,8 +21,8 @@ repositories {
 dependencies {
 
     // spring security
-    // implementation 'org.springframework.boot:spring-boot-starter-security'
-    // testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
+     implementation 'org.springframework.boot:spring-boot-starter-security'
+     testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
 
     // webmvc
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
