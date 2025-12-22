@@ -25,4 +25,8 @@ public class Teacher {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Role role = Role.TEACHER;
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

@@ -1,30 +1,32 @@
 package com.spring.slik_v2_server.domain.teacher.controller;
 
-import com.spring.slik_v2_server.domain.teacher.dto.SignInRequest;
-import com.spring.slik_v2_server.domain.teacher.dto.TeacherRequest;
-import com.spring.slik_v2_server.domain.teacher.service.TecherService;
+import com.spring.slik_v2_server.domain.teacher.dto.request.ChagePsswordRequest;
+import com.spring.slik_v2_server.domain.teacher.dto.request.SignInRequest;
+import com.spring.slik_v2_server.domain.teacher.dto.request.SignUpRequest;
+import com.spring.slik_v2_server.domain.teacher.service.TeacherService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/teacher")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class TeacherController {
-    private final TecherService techerService;
+    private final TeacherService teacherService;
 
     @PostMapping("/signup")
-    public ApiResponse<String> signup(@Valid @RequestBody TeacherRequest request) {
-        return techerService.createTeacher(request);
+    public ApiResponse<String> signup(@Valid @RequestBody SignUpRequest request) {
+        return teacherService.createTeacher(request);
     }
 
-    @PostMapping("/signin")
-    public ApiResponse<String> signin(@RequestBody SignInRequest request) {
-        return techerService.signin(request);
+    @PostMapping("/login")
+    public ApiResponse<String> login(@Valid @RequestBody SignInRequest request) {
+        return teacherService.login(request);
+    }
+
+    @PutMapping("/password")
+    public ApiResponse<?> chagePassword(@RequestBody ChagePsswordRequest request) {
+        return teacherService.chagePassword(request);
     }
 }
