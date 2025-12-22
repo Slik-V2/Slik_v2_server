@@ -1,6 +1,6 @@
 package com.spring.slik_v2_server.domain.teacher.controller;
 
-import com.spring.slik_v2_server.domain.teacher.dto.request.ChagePsswordRequest;
+import com.spring.slik_v2_server.domain.teacher.dto.request.ChangePasswordRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignInRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignUpRequest;
 import com.spring.slik_v2_server.domain.teacher.service.TeacherService;
@@ -26,7 +26,12 @@ public class TeacherController {
     }
 
     @PutMapping("/password")
-    public ApiResponse<?> chagePassword(@RequestBody ChagePsswordRequest request) {
-        return teacherService.chagePassword(request);
+    public ApiResponse<?> changePassword(@RequestBody ChangePasswordRequest request) {
+        return teacherService.changePassword(request);
+    }
+
+    @PostMapping("/isActive/{id}")
+    public ApiResponse<Boolean> isActive(@PathVariable Long id) {
+        return teacherService.isActive(id);
     }
 }

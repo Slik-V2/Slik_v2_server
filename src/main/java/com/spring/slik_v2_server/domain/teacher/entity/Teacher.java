@@ -1,6 +1,12 @@
 package com.spring.slik_v2_server.domain.teacher.entity;
 
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,8 +31,14 @@ public class Teacher {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Role role = Role.TEACHER;
+    @Builder.Default
+    private boolean isActive = false;
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setActive() {
+        isActive = true;
     }
 }
