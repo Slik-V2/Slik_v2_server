@@ -1,5 +1,6 @@
 package com.spring.slik_v2_server.domain.device.service;
 
+import com.spring.slik_v2_server.domain.device.dto.response.VerificationResponse;
 import com.spring.slik_v2_server.domain.device.exception.DeviceStatusCode;
 import com.spring.slik_v2_server.domain.device.dto.request.DeviceRequest;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
@@ -30,7 +31,10 @@ public class DeviceService {
 
         messagingTemplate.convertAndSend(
                 "/topic/" + request.device_id(),
-                student != null ? student.getName() + "출석 확인했습니다." : "일치한 정보가 없습니다."
+                new VerificationResponse(
+                        student != null,
+                        student != null ? student.getName() + " 출석 확인했습니다." : "일치한 정보가 없습니다."
+                )
 
         );
         return ApiResponse.ok("서버 수신 성공");
