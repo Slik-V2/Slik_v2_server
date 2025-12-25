@@ -1,0 +1,27 @@
+package com.spring.slik_v2_server.domain.attendance.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+import java.time.LocalTime;
+
+@Entity
+@Getter
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+public class AttendanceTime {
+
+	@Id
+	@GeneratedValue
+	private Long id;
+
+	@Enumerated(EnumType.STRING)
+	private AttendanceType type;
+
+	private LocalTime startTime;
+	private LocalTime endTime;
+}
