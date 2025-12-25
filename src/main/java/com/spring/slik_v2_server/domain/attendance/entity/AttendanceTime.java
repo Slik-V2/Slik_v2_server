@@ -24,4 +24,9 @@ public class AttendanceTime {
 
 	private LocalTime startTime;
 	private LocalTime endTime;
+
+	public void updateTime(LocalTime startTime, LocalTime endTime) {
+		this.startTime = startTime;
+		this.endTime = endTime;
+	}
 }
