@@ -38,7 +38,7 @@ public class DecryptService {
         }
 
         for (int i = 0; i<= text.length() - n; i++) {
-            String ngram = text.substring(9, i+n);
+            String ngram = text.substring(i, i+n);
             ngrams.add(ngram);
         }
         return ngrams;
@@ -68,7 +68,7 @@ public class DecryptService {
             }
         }
 
-        if (minDistance < 0.9) {
+        if (minDistance > 0.9) {
             return null;
         }
         return bestMacth;

@@ -22,7 +22,7 @@ public class DeviceService {
     @Value("${spring.security.KEY}")
     private String secertKey;
 
-    public ApiResponse<?> Verification(DeviceRequest request, String apiKey) {
+    public ApiResponse<String> Verification(DeviceRequest request, String apiKey) {
         if (!secertKey.equals(apiKey)) {
             throw new ApplicationException(DeviceStatusCode.INVALID_API_KEY);
         }
@@ -35,7 +35,6 @@ public class DeviceService {
                         student != null,
                         student != null ? student.getName() + " 출석 확인했습니다." : "일치한 정보가 없습니다."
                 )
-
         );
         return ApiResponse.ok("서버 수신 성공");
     }
