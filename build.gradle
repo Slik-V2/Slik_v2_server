@@ -22,7 +22,6 @@ dependencies {
 
     // spring security
      implementation 'org.springframework.boot:spring-boot-starter-security'
-     implementation 'org.springframework.security:spring-security-messaging'
      testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
 
     // webmvc
@@ -59,9 +58,6 @@ dependencies {
 
     // spring boot test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-    //java-string-similarity
-    implementation 'info.debatty:java-string-similarity:2.0.0'
 }
 
 tasks.named('test') {
