@@ -27,9 +27,11 @@ public class AttendanceStatus {
     private Long id;
 
     private LocalDateTime date;
+
     @OneToOne
     @JoinColumn(name = "finger_print_id")
     private FingerPrint fingerPrint;
+
     @Enumerated(EnumType.STRING)
     private AttendanceType attendanceType;
 }
