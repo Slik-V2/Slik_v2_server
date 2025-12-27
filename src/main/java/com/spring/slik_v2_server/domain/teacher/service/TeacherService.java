@@ -1,6 +1,6 @@
 package com.spring.slik_v2_server.domain.teacher.service;
 
-import com.spring.slik_v2_server.domain.teacher.dto.request.ChangePasswordRequest;
+import  com.spring.slik_v2_server.domain.teacher.dto.request.ChangePasswordRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignInRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignUpRequest;
 import com.spring.slik_v2_server.domain.teacher.entity.Teacher;
@@ -32,6 +32,7 @@ public class TeacherService {
         teacherRepository.save(Teacher.builder()
                 .username(request.id())
                 .password(bCryptPasswordEncoder.encode(request.password()))
+                .name(request.name())
                 .email(request.email())
                 .phone(request.phone())
                 .build());
