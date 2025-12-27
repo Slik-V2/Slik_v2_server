@@ -19,7 +19,7 @@ public class AttendanceService {
 	private final AttendanceRepository attendanceRepository;
 
 	// 심자 출석체크 가능 시간 설정
-	public ApiResponse<AttendanceTimeResponse> setSchedule (AttendanceTimeRequest request) {
+	public ApiResponse<AttendanceTimeResponse> setAttendanceTime (AttendanceTimeRequest request) {
 		AttendanceType type = request.attendanceType();
 
 		AttendanceTimeEnum defaultTime = type.getDefaultTime();
@@ -27,14 +27,11 @@ public class AttendanceService {
 		LocalTime startTime = request.startTime() != null ? request.startTime() : defaultTime.getDefaultStartTime();
 		LocalTime endTime = request.endTime() != null ? request.endTime() : defaultTime.getDefaultEndTime();
 
-		AttendanceTime attendanceTime = attendanceRepository.findByType(type).map(exist -> {
-				exist.updateTime(startTime, endTime);
-				return exist;
-				}).orElseGet(() -> AttendanceTime.builder()
-						.type(request.attendanceType())
-						.startTime(startTime)
-						.endTime(endTime)
-						.build());
+		AttendanceTime attendanceTime = AttendanceTime.builder()
+				.type(request.attendanceType())
+				.startTime(startTime)
+				.endTime(endTime)
+				.build();
 
 		attendanceRepository.save(attendanceTime);
 		return ApiResponse.ok(AttendanceTimeResponse.of(attendanceTime));
