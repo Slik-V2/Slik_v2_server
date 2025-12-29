@@ -4,6 +4,7 @@ import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceType;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceRepository;
+import com.spring.slik_v2_server.domain.attendance.repository.AttendanceStatusRepository;
 import com.spring.slik_v2_server.domain.device.dto.response.VerificationResponse;
 import com.spring.slik_v2_server.domain.device.exception.DeviceStatusCode;
 import com.spring.slik_v2_server.domain.device.dto.request.DeviceRequest;
@@ -27,6 +28,7 @@ public class DeviceService {
     private final TextEncryptor textEncryptor;
     private final DecryptService decryptService;
     private final AttendanceRepository attendanceRepository;
+    private final AttendanceStatusRepository attendanceStatusRepository;
 
     @Value("${spring.security.KEY}")
     private String secertKey;
@@ -40,11 +42,11 @@ public class DeviceService {
 
         AttendanceType attendanceType = getAttendanceType(LocalTime.now());
 
-        AttendanceStatus attendanceStatus =  com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus.builder()
+        attendanceStatusRepository.save(com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus.builder()
                 .date(LocalDateTime.now())
                 .fingerPrint(student)
                 .attendanceType(attendanceType)
-                .build();
+                .build());
 
         messagingTemplate.convertAndSend(
                 "/topic/" + request.device_id(),
