@@ -22,7 +22,6 @@ public class WebSocketSecurityConfig {
                 .simpDestMatchers("/app/**").authenticated()
                 .simpSubscribeDestMatchers("/topic/public/**").permitAll()
                 .simpSubscribeDestMatchers("/topic/**", "/queue/**").authenticated()
-                .simpTypeMatchers().authenticated()
                 .anyMessage().denyAll();
 
         return messages.build();

@@ -1,14 +1,17 @@
 package com.spring.slik_v2_server.domain.dodam.service;
 
-import com.spring.slik_v2_server.domain.dodam.dto.request.CreateDBRequest;
-import com.spring.slik_v2_server.domain.dodam.dto.response.CreateDBResponse;
+import com.spring.slik_v2_server.domain.dodam.dto.response.SaveStudentsResponse;
+import com.spring.slik_v2_server.domain.dodam.dto.response.external.NightStudyResponse;
 import com.spring.slik_v2_server.domain.dodam.entity.Dodam;
-import com.spring.slik_v2_server.domain.dodam.exception.DodamStatus;
 import com.spring.slik_v2_server.domain.dodam.repository.DodamRepository;
 import com.spring.slik_v2_server.global.data.ApiResponse;
-import com.spring.slik_v2_server.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -16,18 +19,39 @@ public class DodamService {
 
 	private final DodamRepository dodamRepository;
 
-	public ApiResponse<CreateDBResponse> createDB(CreateDBRequest request) {
-		long studentId = Long.parseLong(String.format("%d%d%02d", request.grade(), request.room(), request.number()));
-
-		if (dodamRepository.existsByStudentId(studentId)) {
-			throw new ApplicationException(DodamStatus.ALREADY_CHECKED_STUDENT);
+	@Transactional
+	public List<Dodam> saveStudents(NightStudyResponse response) {
+		if (response.data() == null || response.data().isEmpty()) {
+			return null;
 		}
 
-		Dodam dodam = Dodam.builder()
-				.studentId(studentId)
-				.build();
+		List<Dodam> students = response.data().stream()
+				.map(item -> {
+					NightStudyResponse.StudentInfo info = item.student();
 
-		dodamRepository.save(dodam);
-		return ApiResponse.ok(CreateDBResponse.toEntity(dodam));
+					long studentId = Long.parseLong(String.format("%d%d%02d", info.grade(), info.room(), info.number()));
+
+					return Dodam.builder()
+							.studentId(studentId)
+							.startAt(item.startAt())
+							.endAt(item.endAt())
+							.build();
+				}).collect(Collectors.toList());
+
+		List<Long> studentsId = students.stream()
+				.map(Dodam::getStudentId)
+				.toList();
+
+		List<Dodam> existedStudents = dodamRepository.findAllByStudentIdIn(studentsId);
+
+		List<Dodam> newStudents = students.stream()
+				.filter(s -> !existedStudents.contains(s.getStudentId()))
+				.toList();
+
+		if (!newStudents.isEmpty()) {
+			dodamRepository.saveAll(newStudents);
+		}
+
+		return List.of();
 	}
 }

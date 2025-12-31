@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 @Entity
 @Getter
 @SuperBuilder
@@ -16,4 +19,7 @@ public class Dodam {
 
 	@Id
 	private long studentId;
+
+	private LocalDate startAt;
+	private LocalDate endAt;
 }
