@@ -48,10 +48,10 @@ public class DodamService {
 				.filter(s -> !existedStudents.contains(s.getStudentId()))
 				.toList();
 
-		if (!newStudents.isEmpty()) {
-			dodamRepository.saveAll(newStudents);
+		if (newStudents.isEmpty()) {
+			return List.of();
 		}
 
-		return List.of();
+		return dodamRepository.saveAll(newStudents);
 	}
 }
