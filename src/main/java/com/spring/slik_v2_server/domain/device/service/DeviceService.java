@@ -32,14 +32,14 @@ public class DeviceService {
     private final AttendanceStatusRepository attendanceStatusRepository;
 
     @Value("${spring.security.KEY}")
-    private String secertKey;
+    private String secretKey;
 
     public ApiResponse<String> Verification(DeviceRequest request, HttpServletRequest servletRequest) {
-        if (!secertKey.equals(servletRequest.getHeader("X-API-KEY"))) {
+        if (!secretKey.equals(servletRequest.getHeader("X-API-KEY"))) {
             throw new ApplicationException(DeviceStatusCode.INVALID_API_KEY);
         }
-        String pingerdata = textEncryptor.decrypt(request.encrypted_template());
-        FingerPrint student = decryptService.ContrastRatioComparator(pingerdata);
+        String fingerdata = textEncryptor.decrypt(request.encrypted_template());
+        FingerPrint student = decryptService.ContrastRatioComparator(fingerdata);
 
         AttendanceType attendanceType = getAttendanceType(LocalTime.now());
 

@@ -21,8 +21,8 @@ public class DecryptService {
 
     @PostConstruct
     public void buildLSHIndex() {
-        List<FingerPrint> allFilgerdata = fingerPrintRepository.findAll();
-        for(FingerPrint finger : allFilgerdata) {
+        List<FingerPrint> allFingerdata = fingerPrintRepository.findAll();
+        for(FingerPrint finger : allFingerdata) {
             Set<String> ngrams = extractNGram(finger.getEncrypted_template(), NGRAM_SIZE);
 
             for(String ngram : ngrams) {
@@ -56,7 +56,7 @@ public class DecryptService {
             }
         }
 
-        FingerPrint bestMacth = null;
+        FingerPrint bestMatch = null;
         double minDistance = Double.MAX_VALUE;
 
         for (FingerPrint fingerPrint : candidates) {
@@ -64,13 +64,13 @@ public class DecryptService {
 
             if (dis < minDistance) {
                 minDistance = dis;
-                bestMacth = fingerPrint;
+                bestMatch = fingerPrint;
             }
         }
 
         if (minDistance > 0.9) {
             return null;
         }
-        return bestMacth;
+        return bestMatch;
     }
 }

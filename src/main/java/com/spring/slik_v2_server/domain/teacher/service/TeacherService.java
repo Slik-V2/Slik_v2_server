@@ -56,7 +56,7 @@ public class TeacherService {
 
         if (bCryptPasswordEncoder.matches(request.new_password(), teacher.getPassword())) {
             throw ApplicationException.of(TeacherStatusCode.SAME_AS_OLD_PASSWORD);
-        } else if (bCryptPasswordEncoder.matches(teacher.getPassword(), request.current_password())) {
+        } else if (!bCryptPasswordEncoder.matches(request.current_password(), teacher.getPassword())) {
             throw new ApplicationException(TeacherStatusCode.PASSWORD_NOT_MATCH);
         }
 
