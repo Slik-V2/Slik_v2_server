@@ -4,25 +4,43 @@ import com.spring.slik_v2_server.domain.dodam.dto.response.external.NightStudyRe
 import com.spring.slik_v2_server.domain.dodam.entity.Dodam;
 import com.spring.slik_v2_server.domain.dodam.repository.DodamRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DodamService {
 
 	private final DodamRepository dodamRepository;
+	private final WebClient webClient;
 
-	@Transactional
-	public List<Dodam> saveStudents(NightStudyResponse response) {
-		if (response.data() == null || response.data().isEmpty()) {
-			return null;
+	public List<Dodam> saveStudent() {
+		NightStudyResponse response;
+		try {
+			response = webClient.get()
+					.retrieve()
+					.bodyToMono(NightStudyResponse.class)
+					.block();
+		} catch (Exception e) {
+			log.error("심자신청자 명단을 불러올 수 없습니다. 에러는 다음과 같습니다.\n", e);
+			return List.of();
 		}
 
+		if (response == null || response.data() == null || response.data().isEmpty()) {
+			log.warn("심자신청자 명단이 비어 있습니다.");
+			return List.of();
+		}
+
+		return saveStudents(response);
+	}
+
+	private List<Dodam> saveStudents(NightStudyResponse response) {
 		List<Dodam> students = response.data().stream()
 				.map(item -> {
 					NightStudyResponse.StudentInfo info = item.student();

@@ -7,7 +7,6 @@ import com.spring.slik_v2_server.domain.dodam.service.DodamService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -19,9 +18,9 @@ public class NightStudyController {
 	private final DodamService dodamService;
 
 	@PostMapping("/night_study_list")
-	public ApiResponse<SaveStudentsResponse> saveStudents(@RequestBody NightStudyResponse response) {
+	public ApiResponse<SaveStudentsResponse> saveStudents() {
 
-		List<Dodam> savedStudents = dodamService.saveStudents(response);
+		List<Dodam> savedStudents = dodamService.saveStudent();
 		return ApiResponse.ok(SaveStudentsResponse.of(savedStudents));
 	}
 }
