@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface AttendanceRepository extends JpaRepository<AttendanceTime, Long> {
+public interface  AttendanceRepository extends JpaRepository<AttendanceTime, Long> {
 
 	Optional<AttendanceTime> findByType(AttendanceType type);
 }

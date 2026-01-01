@@ -4,12 +4,14 @@ import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceType;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceRepository;
+import com.spring.slik_v2_server.domain.attendance.repository.AttendanceStatusRepository;
 import com.spring.slik_v2_server.domain.device.dto.response.VerificationResponse;
 import com.spring.slik_v2_server.domain.device.exception.DeviceStatusCode;
 import com.spring.slik_v2_server.domain.device.dto.request.DeviceRequest;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import com.spring.slik_v2_server.global.exception.ApplicationException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -27,24 +29,25 @@ public class DeviceService {
     private final TextEncryptor textEncryptor;
     private final DecryptService decryptService;
     private final AttendanceRepository attendanceRepository;
+    private final AttendanceStatusRepository attendanceStatusRepository;
 
     @Value("${spring.security.KEY}")
-    private String secertKey;
+    private String secretKey;
 
-    public ApiResponse<String> Verification(DeviceRequest request, String apiKey) {
-        if (!secertKey.equals(apiKey)) {
+    public ApiResponse<String> Verification(DeviceRequest request, HttpServletRequest servletRequest) {
+        if (!secretKey.equals(servletRequest.getHeader("X-API-KEY"))) {
             throw new ApplicationException(DeviceStatusCode.INVALID_API_KEY);
         }
-        String pingerdata = textEncryptor.decrypt(request.encrypted_template());
-        FingerPrint student = decryptService.ContrastRatioComparator(pingerdata);
+        String fingerdata = textEncryptor.decrypt(request.encrypted_template());
+        FingerPrint student = decryptService.ContrastRatioComparator(fingerdata);
 
         AttendanceType attendanceType = getAttendanceType(LocalTime.now());
 
-        AttendanceStatus attendanceStatus =  com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus.builder()
+        attendanceStatusRepository.save(com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus.builder()
                 .date(LocalDateTime.now())
                 .fingerPrint(student)
                 .attendanceType(attendanceType)
-                .build();
+                .build());
 
         messagingTemplate.convertAndSend(
                 "/topic/" + request.device_id(),

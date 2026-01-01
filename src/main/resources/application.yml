@@ -21,5 +21,6 @@ spring:
 
   security:
     KEY: ${X-API-KEY}
-    SALT: ${SALT_CONTENT}
-    PASSWORD: ${PASSWORD_CONTENT}
+
+  Dodam:
+    API_KEY: ${API-KEY}
