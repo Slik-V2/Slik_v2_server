@@ -26,12 +26,13 @@ public class AttendanceStatus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime date;
-
     @OneToOne
     @JoinColumn(name = "finger_print_id")
     private FingerPrint fingerPrint;
 
     @Enumerated(EnumType.STRING)
-    private AttendanceType attendanceType;
+    private NightStudyStatus status; // 심자 중, 심자 복귀
+
+    private LocalDateTime nightStudy1LastAction;
+    private LocalDateTime nightStudy2LastAction;
 }

@@ -43,8 +43,8 @@ public class DeviceService {
 
         AttendanceType attendanceType = getAttendanceType(LocalTime.now());
 
-        attendanceStatusRepository.save(com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus.builder()
-                .date(LocalDateTime.now())
+        attendanceStatusRepository.save(AttendanceStatus.builder()
+                .time(LocalDateTime.now())
                 .fingerPrint(student)
                 .attendanceType(attendanceType)
                 .build());
