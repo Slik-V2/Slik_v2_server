@@ -13,7 +13,7 @@ public class DodamScheduler {
 
 	private final DodamService dodamService;
 
-	@Scheduled(cron = "0 35 20 * * mon-fri")
+	@Scheduled(cron = "0 35 20 * * mon-thu")
 	public void saveStudents() {
 		log.info("심자신청자 명단을 저장하고 있습니다. 잠시만 기다려 주세요. . .");
 
