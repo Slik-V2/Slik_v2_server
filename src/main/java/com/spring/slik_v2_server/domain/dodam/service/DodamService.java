@@ -32,11 +32,6 @@ public class DodamService {
 			return List.of();
 		}
 
-		if (response == null || response.data() == null || response.data().isEmpty()) {
-			log.warn("심자신청자 명단이 비어 있습니다.");
-			return List.of();
-		}
-
 		return saveStudents(response);
 	}
 
