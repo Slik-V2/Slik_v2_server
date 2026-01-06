@@ -3,14 +3,12 @@ package com.spring.slik_v2_server.domain.attendance.service;
 import com.spring.slik_v2_server.domain.attendance.dto.request.AttendanceTimeRequest;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceStatusResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
-import com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeEnum;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceType;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceRepository;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceStatusRepository;
 import com.spring.slik_v2_server.global.data.ApiResponse;
-import com.spring.slik_v2_server.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -43,9 +41,10 @@ public class AttendanceService {
 		return exist;
 		}).orElseGet(() -> AttendanceTime.builder()
 				.type(request.attendanceType())
-						.startTime(startTime)
-						.endTime(endTime)
-						.build());
+				.today(LocalDate.now())
+				.startTime(startTime)
+				.endTime(endTime)
+				.build());
 
 		attendanceRepository.save(attendanceTime);
 		return ApiResponse.ok(AttendanceTimeResponse.of(attendanceTime));

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
@@ -22,6 +23,7 @@ public class AttendanceTime {
 	@Enumerated(EnumType.STRING)
 	private AttendanceType type;
 
+	private LocalDate today;
 	private LocalTime startTime;
 	private LocalTime endTime;
 
