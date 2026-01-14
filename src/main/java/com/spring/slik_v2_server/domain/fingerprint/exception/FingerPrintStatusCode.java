@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum FingerPrintStatusCode implements StatusCode {
 
+	INVALID_API_KEY(HttpStatus.UNAUTHORIZED, "INVALID_API_KEY", "API 키가 맞지 않습니다"),
 	STUDENT_ID_ALREADY_EXISTS(HttpStatus.CONFLICT, "STUDENT_ID_ALREADY_EXISTS", "이미 존재하는 학번입니다.");
 
 	private final HttpStatus httpStatus;

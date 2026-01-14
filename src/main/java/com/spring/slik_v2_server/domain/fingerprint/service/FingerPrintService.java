@@ -1,6 +1,5 @@
 package com.spring.slik_v2_server.domain.fingerprint.service;
 
-import com.spring.slik_v2_server.domain.device.exception.DeviceStatusCode;
 import com.spring.slik_v2_server.domain.fingerprint.dto.request.FingerPrintRequest;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;
@@ -25,7 +24,7 @@ public class FingerPrintService {
 	// 지문 등록
 	public ApiResponse<HttpStatus> create(FingerPrintRequest request, HttpServletRequest httpRequest) {
 		if (!secretKey.equals(httpRequest.getHeader("X-API-KEY"))) {
-			throw new ApplicationException(DeviceStatusCode.INVALID_API_KEY);
+			throw new ApplicationException(FingerPrintStatusCode.INVALID_API_KEY);
 		}
 
 		if (!request.studentId().equals("0000") && fingerPrintRepository.existsByStudentId(request.studentId())) {
