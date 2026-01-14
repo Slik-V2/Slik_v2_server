@@ -175,3 +175,18 @@ Temporary Items
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij,macos
 .env
+
+# Gradle
+.gradle/
+**/build/
+!src/**/build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# IntelliJ IDEA - additional
+.idea/misc.xml
+.idea/modules.xml
+.idea/*.iml
+.idea/.name
+.idea/vcs.xml
