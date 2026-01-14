@@ -20,8 +20,7 @@ public record FingerPrintResponse(
 
 	public static List<FingerPrintResponse> toList(List<FingerPrint> fingerPrint) {
 		return fingerPrint.stream().map(
-				FingerPrintResponse::of
-				)
+				FingerPrintResponse::of)
 				.collect(Collectors.toList());
 	}
 }
