@@ -3,9 +3,9 @@ spring:
   name: slik_v2_server
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:3306/slik?useSSL=false&serverTimezone=Asia/Seoul
+    username: root
+    password:
 
   jpa:
     hibernate:
@@ -16,11 +16,11 @@ spring:
         format_sql: true
 
   jwt:
-    secret: ${JWT_SECRET}
+    secret: d5EtxqHjgcT5MFqpCs2XnjsPaYLEqXm4G9/9J5J7YxotQxyuR2krGCcRK+h9SN8Neae6Vpdr03ywNN+jLdFLo2nAXTxP7T84uLrRjgpv57A3FLEczFjngSUGHUq8UK8DJAlr4NEaoCGU2GEn2KaINediND9wtkq8JnInfsq/Nw0=
     access-token-expiration: 3600000
 
   security:
-    KEY: ${X-API-KEY}
+    KEY: qQxzb25KqWZwv70Mfah3LMr4pIuGAZWIs9S+Dj1C0GmeB+kWo3xQJRIxrhepgS6T7JYk1ybLKNRr/BGlsKzVZg==
 
   Dodam:
-    API_KEY: ${API-KEY}
+    API_KEY: https://dodamapi.b1nd.com/night-stud
