@@ -1,5 +1,6 @@
 package com.spring.slik_v2_server.domain.attendance.entity;
 
+import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,6 +24,9 @@ public class AttendanceTime {
 
 	@Enumerated(EnumType.STRING)
 	private AttendanceType type;
+
+	@OneToOne
+	private FingerPrint fingerPrint;
 
 	private LocalDate today;
 	private LocalTime startTime;
