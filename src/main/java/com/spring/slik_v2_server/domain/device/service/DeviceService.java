@@ -96,7 +96,8 @@ public class DeviceService {
                 LocalTime startTime = schedule.getStartTime();
                 LocalTime endTime = schedule.getEndTime();
 
-                if (now.isAfter(startTime.minusSeconds(1)) &&
+                if (startTime != null && endTime != null &&
+                        now.isAfter(startTime.minusSeconds(1)) &&
                         now.isBefore(endTime.plusSeconds(1))) {
                     return type;
                 }
