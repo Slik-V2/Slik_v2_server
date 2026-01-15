@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record FingerPrintResponse(
+		Long id,
 		String studentId,
-		String name,
 		String encrypted_template
 ) {
 
 	public static FingerPrintResponse of(FingerPrint fingerPrint) {
 		return new FingerPrintResponse(
+				fingerPrint.getId(),
 				fingerPrint.getStudentId(),
-				fingerPrint.getName(),
 				fingerPrint.getEncrypted_template());
 	}
 

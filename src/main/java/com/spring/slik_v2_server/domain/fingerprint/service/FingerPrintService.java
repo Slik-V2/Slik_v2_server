@@ -36,7 +36,6 @@ public class FingerPrintService {
 
 		FingerPrint fingerPrint = FingerPrint.builder()
 				.studentId(request.studentId())
-				.name(request.name())
 				.encrypted_template(request.encrypted_template())
 				.build();
 
@@ -44,6 +43,7 @@ public class FingerPrintService {
 		return ApiResponse.ok(HttpStatus.CREATED);
 	}
 
+	// 등록된 사용자 조회
 	public ApiResponse<List<FingerPrintResponse>> read(HttpServletRequest request) {
 		if (!secretKey.equals(request.getHeader("X-API-KEY"))) {
 			throw new ApplicationException(FingerPrintStatusCode.INVALID_API_KEY);
