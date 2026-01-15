@@ -3,6 +3,7 @@ package com.spring.slik_v2_server.domain.attendance.entity;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -29,7 +30,8 @@ public class AttendanceTime {
 	private FingerPrint fingerPrint;
 
 	private LocalDate today;
-	private LocalTime startTime;
+	@Builder.Default
+	private LocalTime startTime = LocalTime.now();
 	private LocalTime endTime;
 
 	public void updateTime(LocalTime startTime, LocalTime endTime) {
@@ -39,5 +41,9 @@ public class AttendanceTime {
 
 	public void setType(AttendanceType type) {
 		this.type = type;
+	}
+
+	public void setEndTime(LocalTime endTime) {
+		this.endTime = endTime;
 	}
 }

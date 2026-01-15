@@ -22,5 +22,7 @@ public class FingerPrint {
 
 	@JsonProperty("student_id")
 	private String studentId; // 학번(선생님의 경우 0000)
+
+	@Column(columnDefinition = "TEXT")
 	private String encrypted_template; // AES-256으로 암호화 된 지문 데이터
 }
