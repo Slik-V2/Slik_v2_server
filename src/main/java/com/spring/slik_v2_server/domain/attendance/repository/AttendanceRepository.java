@@ -14,4 +14,6 @@ public interface  AttendanceRepository extends JpaRepository<AttendanceTime, Lon
 	Optional<AttendanceTime> findByType(AttendanceType type);
 
 	List<AttendanceTime> findAllByFingerPrintAndTodayBetween(FingerPrint fingerPrint, LocalDate todayAfter, LocalDate todayBefore);
+
+	Optional<AttendanceTime> findByFingerPrintAndTodayAndType(FingerPrint fingerPrint, LocalDate today, AttendanceType type);
 }

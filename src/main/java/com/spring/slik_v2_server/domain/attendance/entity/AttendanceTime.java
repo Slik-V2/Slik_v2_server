@@ -36,4 +36,8 @@ public class AttendanceTime {
 		this.startTime = startTime;
 		this.endTime = endTime;
 	}
+
+	public void setType(AttendanceType type) {
+		this.type = type;
+	}
 }
