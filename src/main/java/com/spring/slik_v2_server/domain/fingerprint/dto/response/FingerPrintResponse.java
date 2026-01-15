@@ -7,14 +7,12 @@ import java.util.stream.Collectors;
 
 public record FingerPrintResponse(
 		String studentId,
-		String name,
 		String encrypted_template
 ) {
 
 	public static FingerPrintResponse of(FingerPrint fingerPrint) {
 		return new FingerPrintResponse(
 				fingerPrint.getStudentId(),
-				fingerPrint.getName(),
 				fingerPrint.getEncrypted_template());
 	}
 
