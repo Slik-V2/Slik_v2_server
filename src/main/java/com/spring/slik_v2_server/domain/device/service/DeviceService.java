@@ -6,12 +6,14 @@ import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeEnum;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceType;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceRepository;
 import com.spring.slik_v2_server.domain.device.dto.request.UpdateDeviceRequest;
+import com.spring.slik_v2_server.domain.device.dto.request.VerifyDeviceRequest;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;
 import com.spring.slik_v2_server.domain.fingerprint.repository.FingerPrintRepository;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import com.spring.slik_v2_server.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,6 +26,32 @@ import java.util.Optional;
 public class DeviceService {
     private final AttendanceRepository attendanceRepository;
     private final FingerPrintRepository fingerPrintRepository;
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public ApiResponse<String> verifyAttendance(VerifyDeviceRequest request) {
+        LocalTime time = LocalTime.now();
+        AttendanceType type = determineAttendanceType(time);
+
+        FingerPrint fingerPrint = fingerPrintRepository.findById(request.id())
+                .orElseThrow(() -> new ApplicationException(FingerPrintStatusCode.STUDENT_NOT_FOUND));
+
+        AttendanceTime attendance = attendanceRepository.findByFingerPrintAndTodayAndType(fingerPrint, LocalDate.now(), type)
+                .map(attendanceTime -> {
+                    attendanceTime.setEndTime(LocalTime.now());
+                    return attendanceRepository.save(attendanceTime);
+                }).orElseGet(() -> attendanceRepository.save(AttendanceTime.builder()
+                                .fingerPrint(fingerPrint)
+                                .today(LocalDate.now())
+                                .startTime(LocalTime.now())
+                                .type(type)
+                        .build())
+                );
+
+        AttendanceTimeResponse response = AttendanceTimeResponse.of(attendance);
+        messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), response);
+
+        return ApiResponse.ok("인증되었습니다.");
+    }
 
     public ApiResponse<List<AttendanceTimeResponse>> findAttendanceStatus(String id) {
         LocalDate today = LocalDate.now();
@@ -36,7 +64,7 @@ public class DeviceService {
         return ApiResponse.ok(attendanceStatus);
     }
 
-    public ApiResponse<?> updateAttendanceStatus(UpdateDeviceRequest request) {
+    public ApiResponse<String> updateAttendanceStatus(UpdateDeviceRequest request) {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
 
@@ -69,7 +97,7 @@ public class DeviceService {
                 LocalTime endTime = schedule.getEndTime();
 
                 if (now.isAfter(startTime.minusSeconds(1)) &&
-                    now.isBefore(endTime.plusSeconds(1))) {
+                        now.isBefore(endTime.plusSeconds(1))) {
                     return type;
                 }
             } else {
@@ -78,7 +106,7 @@ public class DeviceService {
                 LocalTime defaultEnd = defaultTime.getDefaultEndTime();
 
                 if (now.isAfter(defaultStart.minusSeconds(1)) &&
-                    now.isBefore(defaultEnd.plusSeconds(1))) {
+                        now.isBefore(defaultEnd.plusSeconds(1))) {
                     return type;
                 }
             }

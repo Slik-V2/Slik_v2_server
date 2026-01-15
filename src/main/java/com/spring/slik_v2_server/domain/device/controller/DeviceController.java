@@ -1,7 +1,9 @@
 package com.spring.slik_v2_server.domain.device.controller;
 
+import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
 import com.spring.slik_v2_server.domain.device.dto.request.FindAttendanceRequest;
 import com.spring.slik_v2_server.domain.device.dto.request.UpdateDeviceRequest;
+import com.spring.slik_v2_server.domain.device.dto.request.VerifyDeviceRequest;
 import com.spring.slik_v2_server.domain.device.service.DeviceService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import jakarta.validation.Valid;
@@ -12,20 +14,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/device/override   ")
+@RequestMapping("/device")
 public class DeviceController {
     private final DeviceService deviceService;
 
+    @PostMapping("/verify")
+    public ApiResponse<String> verify(@Valid @RequestBody VerifyDeviceRequest request) {
+        return deviceService.verifyAttendance(request);
+    }
+
+    @RequestMapping("/override")
     @PostMapping("/lookup")
-    public ApiResponse<?> lookup(@Valid @RequestBody FindAttendanceRequest request) {
+    public ApiResponse<List<AttendanceTimeResponse>> lookup(@Valid @RequestBody FindAttendanceRequest request) {
         return deviceService.findAttendanceStatus(request.studnet_id());
 
     }
 
     @PatchMapping("/confirm")
-    public ApiResponse<?> updateDevice(@Valid @RequestBody UpdateDeviceRequest request) {
+    public ApiResponse<String> updateDevice(@Valid @RequestBody UpdateDeviceRequest request) {
         return deviceService.updateAttendanceStatus(request);
     }
 }
