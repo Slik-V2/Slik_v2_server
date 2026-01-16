@@ -4,6 +4,7 @@ import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeRe
 import com.spring.slik_v2_server.domain.device.dto.request.FindAttendanceRequest;
 import com.spring.slik_v2_server.domain.device.dto.request.UpdateDeviceRequest;
 import com.spring.slik_v2_server.domain.device.dto.request.VerifyDeviceRequest;
+import com.spring.slik_v2_server.domain.device.dto.response.DeviceResponse;
 import com.spring.slik_v2_server.domain.device.service.DeviceService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import jakarta.validation.Valid;
@@ -23,7 +24,7 @@ public class DeviceController {
     private final DeviceService deviceService;
 
     @PostMapping("/verify")
-    public ApiResponse<String> verify(@Valid @RequestBody VerifyDeviceRequest request) {
+    public ApiResponse<DeviceResponse> verify(@Valid @RequestBody VerifyDeviceRequest request) {
         return deviceService.verifyAttendance(request);
     }
 
