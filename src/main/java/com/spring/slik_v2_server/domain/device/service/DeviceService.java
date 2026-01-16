@@ -10,6 +10,8 @@ import com.spring.slik_v2_server.domain.device.dto.request.VerifyDeviceRequest;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;
 import com.spring.slik_v2_server.domain.fingerprint.repository.FingerPrintRepository;
+import com.spring.slik_v2_server.domain.student.entity.Student;
+import com.spring.slik_v2_server.domain.student.repository.StudentRepository;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import com.spring.slik_v2_server.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import java.util.Optional;
 public class DeviceService {
     private final AttendanceRepository attendanceRepository;
     private final FingerPrintRepository fingerPrintRepository;
+    private final StudentRepository studentRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
     public ApiResponse<String> verifyAttendance(VerifyDeviceRequest request) {
@@ -33,6 +36,9 @@ public class DeviceService {
         AttendanceType type = determineAttendanceType(time);
 
         FingerPrint fingerPrint = fingerPrintRepository.findById(request.id())
+                .orElseThrow(() -> new ApplicationException(FingerPrintStatusCode.STUDENT_NOT_FOUND));
+
+        Student student = studentRepository.findByStudentId(fingerPrint.getStudentId())
                 .orElseThrow(() -> new ApplicationException(FingerPrintStatusCode.STUDENT_NOT_FOUND));
 
         AttendanceTime attendance = attendanceRepository.findByFingerPrintAndTodayAndType(fingerPrint, LocalDate.now(), type)
@@ -50,7 +56,7 @@ public class DeviceService {
         AttendanceTimeResponse response = AttendanceTimeResponse.of(attendance);
         messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), response);
 
-        return ApiResponse.ok("인증되었습니다.");
+        return ApiResponse.ok(student.getName() + "님이 출석했습니다.");
     }
 
     public ApiResponse<List<AttendanceTimeResponse>> findAttendanceStatus(String id) {

@@ -3,6 +3,7 @@ package com.spring.slik_v2_server.domain.fingerprint.controller;
 import com.spring.slik_v2_server.domain.fingerprint.dto.request.FingerPrintRequest;
 import com.spring.slik_v2_server.domain.fingerprint.dto.response.FingerPrintResponse;
 import com.spring.slik_v2_server.domain.fingerprint.service.FingerPrintService;
+import com.spring.slik_v2_server.domain.student.Service.StudentService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -18,10 +19,12 @@ import java.util.List;
 public class FingerPrintController {
 
 	private final FingerPrintService fingerPrintService;
+	private final StudentService studentService;
 
 	@PostMapping("/register")
 	public ApiResponse<HttpStatus> create(@Valid @RequestBody FingerPrintRequest request, HttpServletRequest httpRequest) {
-		return fingerPrintService.create(request, httpRequest);
+		fingerPrintService.create(request, httpRequest);
+		return studentService.saveStudentInfo(request.studentId());
 	}
 
 	@GetMapping("/manage")
