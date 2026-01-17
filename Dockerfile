@@ -1,5 +1,5 @@
 # Build stage
-FROM eclipse-temurin:17-jdk-alpine AS build
+FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
 
 # Gradle Wrapper 복사 및 실행 권한 부여
@@ -18,7 +18,7 @@ COPY src src
 RUN ./gradlew bootJar --no-daemon
 
 # Runtime stage
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # 보안을 위한 non-root 유저 생성
