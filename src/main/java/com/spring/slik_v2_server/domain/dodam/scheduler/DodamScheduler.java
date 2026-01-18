@@ -24,5 +24,4 @@ public class DodamScheduler {
 			log.error("심자신청자 명단을 불러오는데 알 수 없는 문제가 발생했습니다. 에러는 아래와 같습니다.\n", e);
 		}
 	}
-
 }
