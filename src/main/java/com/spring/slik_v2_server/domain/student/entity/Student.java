@@ -1,12 +1,12 @@
 package com.spring.slik_v2_server.domain.student.entity;
 
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,10 +1,10 @@
 package com.spring.slik_v2_server.domain.dodam.repository;
 
-import com.spring.slik_v2_server.domain.dodam.entity.Dodam;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-import java.util.Optional;
+import com.spring.slik_v2_server.domain.dodam.entity.Dodam;
 
 public interface DodamRepository extends JpaRepository<Dodam, Long> {
 

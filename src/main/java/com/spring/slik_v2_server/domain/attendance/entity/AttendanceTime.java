@@ -1,20 +1,24 @@
 package com.spring.slik_v2_server.domain.attendance.entity;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 
 @Entity
 @Getter
-@SuperBuilder
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class AttendanceTime {
