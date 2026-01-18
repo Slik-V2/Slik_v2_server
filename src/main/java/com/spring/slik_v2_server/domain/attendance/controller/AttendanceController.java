@@ -1,8 +1,8 @@
 package com.spring.slik_v2_server.domain.attendance.controller;
 
 import com.spring.slik_v2_server.domain.attendance.dto.request.AttendanceStatusRequest;
-import com.spring.slik_v2_server.domain.attendance.dto.request.AttendanceTimeRequest;
-import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
+import com.spring.slik_v2_server.domain.attendance.dto.request.AttendanceTimeSetRequest;
+import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeSetResponse;
 import com.spring.slik_v2_server.domain.attendance.service.AttendanceService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,13 @@ public class AttendanceController {
 
 	private final AttendanceService attendanceService;
 
+	@GetMapping("/schedule")
+	public ApiResponse<AttendanceTimeSetResponse> getSchedule() {
+		return attendanceService.getSchedule();
+	}
+
 	@PutMapping("/schedule")
-	public ApiResponse<AttendanceTimeResponse> setSchedule(@RequestBody AttendanceTimeRequest request) {
+	public ApiResponse<AttendanceTimeSetResponse> setSchedule(@RequestBody AttendanceTimeSetRequest request) {
 		return attendanceService.setSchedule(request);
 	}
 

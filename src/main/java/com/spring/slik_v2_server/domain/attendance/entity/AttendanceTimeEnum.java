@@ -7,16 +7,18 @@ import java.time.LocalTime;
 @Getter
 public enum AttendanceTimeEnum {
 
-	Night1Start(LocalTime.of(21, 0), LocalTime.of(21, 15)),
-	Night1End(LocalTime.of(21, 50), LocalTime.of(22, 15)),
-	Night2Start(LocalTime.of(22, 40), LocalTime.of(23, 0)),
-	Night2End(LocalTime.of(23, 50), LocalTime.of(23, 55));
+	session1_1Start(LocalTime.of(21, 0)),
+	session1_1End(LocalTime.of(21, 15)),
+	session1_2Start(LocalTime.of(21, 50)),
+	session1_2End(LocalTime.of(22, 15)),
+	session2_1Start(LocalTime.of(22, 40)),
+	session2_1End(LocalTime.of(23, 0)),
+	session2_2Start(LocalTime.of(23, 50)),
+	session2_2End(LocalTime.of(23, 59));
 
-	private final LocalTime defaultStartTime;
-	private final LocalTime defaultEndTime;
+	private final LocalTime defaultTime;
 
-	AttendanceTimeEnum(LocalTime defaultStartTime, LocalTime defaultEndTime) {
-		this.defaultStartTime = defaultStartTime;
-		this.defaultEndTime = defaultEndTime;
+	AttendanceTimeEnum(LocalTime defaultTime) {
+		this.defaultTime = defaultTime;
 	}
 }

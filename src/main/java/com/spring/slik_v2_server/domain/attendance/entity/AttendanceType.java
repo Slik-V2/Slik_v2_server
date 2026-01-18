@@ -3,10 +3,14 @@ package com.spring.slik_v2_server.domain.attendance.entity;
 import lombok.Getter;
 
 public enum AttendanceType {
-    night_entry1(AttendanceTimeEnum.Night1Start), // 심자1 출석여부
-    night_exit1(AttendanceTimeEnum.Night1End), // 심자1 복귀여부
-    night_entry2(AttendanceTimeEnum.Night2Start), // 심자2 출석여부
-    night_exit2(AttendanceTimeEnum.Night1End); // 심자2 복귀여부
+    session1_1Start(AttendanceTimeEnum.session1_1Start),
+    session1_1End(AttendanceTimeEnum.session1_1End),
+    session1_2Start(AttendanceTimeEnum.session1_2Start),
+    session1_2End(AttendanceTimeEnum.session1_2End),
+    session2_1Start(AttendanceTimeEnum.session2_1Start),
+    session2_1End(AttendanceTimeEnum.session2_1End),
+    session2_2Start(AttendanceTimeEnum.session2_2Start),
+    session2_2End(AttendanceTimeEnum.session2_2End);
 
     @Getter
     private final AttendanceTimeEnum defaultTime;
@@ -14,4 +18,4 @@ public enum AttendanceType {
     AttendanceType(AttendanceTimeEnum defaultTime) {
         this.defaultTime = defaultTime;
     }
-}
+    }
