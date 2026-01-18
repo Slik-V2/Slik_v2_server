@@ -21,6 +21,7 @@ public class StudentService {
     public ApiResponse<HttpStatus> saveStudentInfo(String studentId) {
         Student student = studentRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
+
         FingerPrint fingerPrint = fingerPrintRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new ApplicationException(FingerPrintStatusCode.STUDENT_NOT_FOUND));
 

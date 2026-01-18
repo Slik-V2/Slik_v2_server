@@ -30,6 +30,7 @@ public class AttendanceTime {
 	private FingerPrint fingerPrint;
 
 	private LocalDate today;
+
 	@Builder.Default
 	private LocalTime startTime = LocalTime.now();
 	private LocalTime endTime;
