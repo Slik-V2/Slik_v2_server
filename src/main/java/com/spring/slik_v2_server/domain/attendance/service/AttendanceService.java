@@ -1,13 +1,11 @@
 package com.spring.slik_v2_server.domain.attendance.service;
 
-import com.spring.slik_v2_server.domain.attendance.dto.request.AttendanceTimeRequest;
 import com.spring.slik_v2_server.domain.attendance.dto.request.AttendanceTimeSetRequest;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeSetResponse;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeEnum;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeSet;
-import com.spring.slik_v2_server.domain.attendance.entity.AttendanceType;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceRepository;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceSetRepository;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
@@ -32,6 +30,12 @@ public class AttendanceService {
 	private final FingerPrintRepository fingerPrintRepository;
 	@Value("${spring.Dodam.API_KEY}")
 	private String DodamApiKey;
+
+	// 심자 출석체크 가능 시간 조회
+	public ApiResponse<AttendanceTimeSetResponse> getSchedule() {
+		AttendanceTimeSet setTime = attendanceSetRepository.findByToday(LocalDate.now()).orElseThrow();
+		return ApiResponse.ok(AttendanceTimeSetResponse.of(setTime));
+	}
 
 	// 심자 출석체크 가능 시간 설정
 	public ApiResponse<AttendanceTimeSetResponse> setSchedule (AttendanceTimeSetRequest request) {

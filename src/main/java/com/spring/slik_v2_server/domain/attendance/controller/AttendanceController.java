@@ -19,10 +19,10 @@ public class AttendanceController {
 
 	private final AttendanceService attendanceService;
 
-//	@GetMapping("/schedule")
-//	public ApiResponse<?> getSchedule() {
-//
-//	}
+	@GetMapping("/schedule")
+	public ApiResponse<AttendanceTimeSetResponse> getSchedule() {
+		return attendanceService.getSchedule();
+	}
 
 	@PutMapping("/schedule")
 	public ApiResponse<AttendanceTimeSetResponse> setSchedule(@RequestBody AttendanceTimeSetRequest request) {
