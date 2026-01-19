@@ -102,6 +102,10 @@ public class AttendanceService {
 	}
 
 	public ApiResponse<?> getliveAttendanceStatus(LocalDate today) {
-		List<?> students = attendanceRepository.findAllbyToday(today);
+		List<AttendanceTime> attendanceTimes = attendanceRepository.findAllByToday(today);
+		List<StudentAttendanceResponse> students = attendanceTimes.stream()
+				.map(StudentAttendanceResponse::of)
+				.collect(Collectors.toList());
+		return ApiResponse.ok(LiveAttendanceResponse.of(today, students));
 	}
 }
