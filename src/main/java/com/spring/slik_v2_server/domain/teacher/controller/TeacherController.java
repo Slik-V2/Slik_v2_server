@@ -3,9 +3,11 @@ package com.spring.slik_v2_server.domain.teacher.controller;
 import com.spring.slik_v2_server.domain.teacher.dto.request.ChangePasswordRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignInRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignUpRequest;
+import com.spring.slik_v2_server.domain.teacher.dto.response.LoginResponse;
 import com.spring.slik_v2_server.domain.teacher.service.TeacherService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +23,18 @@ public class TeacherController {
     }
 
     @PostMapping("/login")
-    public ApiResponse<String> login(@Valid @RequestBody SignInRequest request) {
+    public ApiResponse<LoginResponse> login(@Valid @RequestBody SignInRequest request) {
         return teacherService.login(request);
     }
 
     @PutMapping("/password")
     public ApiResponse<?> changePassword(@RequestBody ChangePasswordRequest request) {
         return teacherService.changePassword(request);
+    }
+
+    @GetMapping("/users")
+    public ApiResponse<?> getTeachers() {
+        return teacherService.getTeachers();
     }
 
     @PostMapping("/isActive/{id}")

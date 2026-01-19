@@ -35,7 +35,7 @@ public class DeviceController {
 
     }
 
-    @PatchMapping("/confirm")
+    @PatchMapping("/override/confirm")
     public ApiResponse<String> updateDevice(@Valid @RequestBody UpdateDeviceRequest request) {
         return deviceService.updateAttendanceStatus(request);
     }

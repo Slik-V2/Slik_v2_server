@@ -28,7 +28,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 path.startsWith("/swagger-ui/") ||
                 path.startsWith("/v3/api-docs/") ||
                 path.startsWith("/login") ||
-                path.startsWith("/auth/") ||
+                path.equals("/auth/login") ||
+                path.equals("/auth/isActive/") ||
+                path.equals("/auth/password") ||
+                path.equals("/auth/signup") ||
                 path.equals("/users/manage") ||
                 path.equals("/users/register") ||
                 path.equals("/night_study_list") ||
@@ -51,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String username = jwtProvider.getUsernameFromToken(token);
-        String role = jwtProvider.getRole(token).name();
+        String role = "ROLE_" + jwtProvider.getRole(token).name();
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
 
         UsernamePasswordAuthenticationToken authentication =
