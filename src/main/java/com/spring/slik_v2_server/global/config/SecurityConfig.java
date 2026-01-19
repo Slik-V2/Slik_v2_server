@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/users").hasRole("ADMIN")
                         .requestMatchers("/users/register", "/users/manage", "/ws/**", "/night_study_list", "/error").permitAll()
                         .requestMatchers("/device/**").permitAll()
-                        .requestMatchers("/auth/login", "/auth/isActive/", "/auth/password", "/auth/signup").permitAll()
+                        .requestMatchers("/auth/login", "/auth/isActive/", "/auth/signup").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

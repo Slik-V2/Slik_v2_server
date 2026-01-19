@@ -17,6 +17,4 @@ public interface  AttendanceRepository extends JpaRepository<AttendanceTime, Lon
 	List<AttendanceTime> findAllByToday(LocalDate date);
 
 	Optional<AttendanceTime> findByFingerPrint_IdAndToday(String fingerPrintId, LocalDate today);
-
-	Optional<AttendanceTime> findByFingerPrintAndTodayAndType(FingerPrint fingerPrint, LocalDate today, AttendanceType type);
 }

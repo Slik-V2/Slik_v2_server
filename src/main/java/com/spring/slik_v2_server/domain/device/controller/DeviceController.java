@@ -28,7 +28,6 @@ public class DeviceController {
         return deviceService.verifyAttendance(request);
     }
 
-    @RequestMapping("/override")
     @PostMapping("/lookup")
     public ApiResponse<List<AttendanceTimeResponse>> lookup(@Valid @RequestBody FindAttendanceRequest request) {
         return deviceService.findAttendanceStatus(request.studnet_id());
