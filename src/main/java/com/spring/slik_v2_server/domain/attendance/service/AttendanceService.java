@@ -45,17 +45,45 @@ public class AttendanceService {
 	// 심자 출석체크 가능 시간 설정
 	public ApiResponse<AttendanceTimeSetResponse> setSchedule (AttendanceTimeSetRequest request) {
 
-		LocalTime session1_1Start = setDefault(request.session1_1Start(), AttendanceTimeEnum.session1_1Start);
-		LocalTime session1_1End = setDefault(request.session1_1End(), AttendanceTimeEnum.session1_1End);
+		// 심자1 출석체크 가능 범위
+		LocalTime session1_1Start = setDefault(
+				request.session1_1Start(),
+				AttendanceTimeEnum.session1_1Start
+		);
+		LocalTime session1_1End = setDefault(
+				request.session1_1End(),
+				AttendanceTimeEnum.session1_1End
+		);
 
-		LocalTime session1_2Start = setDefault(request.session1_2Start(), AttendanceTimeEnum.session1_2Start);
-		LocalTime session1_2End = setDefault(request.session1_2End(), AttendanceTimeEnum.session1_2End);
+		// 심자1 복귀체크 가능 범위
+		LocalTime session1_2Start = setDefault(
+				request.session1_2Start(),
+				AttendanceTimeEnum.session1_2Start
+		);
+		LocalTime session1_2End = setDefault(
+				request.session1_2End(),
+				AttendanceTimeEnum.session1_2End);
 
-		LocalTime session2_1Start = setDefault(request.session2_1Start(), AttendanceTimeEnum.session2_1Start);
-		LocalTime session2_1End = setDefault(request.session2_1End(), AttendanceTimeEnum.session2_1End);
+		// 심자2 출석체크 가능 범위
+		LocalTime session2_1Start = setDefault(
+				request.session2_1Start(),
+				AttendanceTimeEnum.session2_1Start
+		);
+		LocalTime session2_1End = setDefault(
+				request.session2_1End(),
+				AttendanceTimeEnum.session2_1End
+		);
 
-		LocalTime session2_2Start = setDefault(request.session2_2Start(), AttendanceTimeEnum.session2_2Start);
-		LocalTime session2_2End = setDefault(request.session2_2End(), AttendanceTimeEnum.session2_2End);
+		// 심자2 복귀체크 가능 범위
+		LocalTime session2_2Start = setDefault(
+				request.session2_2Start(),
+				AttendanceTimeEnum.session2_2Start
+		);
+		LocalTime session2_2End = setDefault(
+				request.session2_2End(),
+				AttendanceTimeEnum.session2_2End
+		);
+
 
 		AttendanceTimeSet attendanceTimeSet = attendanceSetRepository.findByToday(LocalDate.now()).map(exist -> {
 			exist.updateTime(
@@ -71,6 +99,7 @@ public class AttendanceService {
 			return exist;
 		}).orElseGet(() ->
 				AttendanceTimeSet.builder()
+						.today(LocalDate.now())
 						.session1_1Start(session1_1Start)
 						.session1_1End(session1_1End)
 						.session1_2Start(session1_2Start)

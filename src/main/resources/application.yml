@@ -10,7 +10,9 @@ spring:
   sql:
     init:
       mode: always
-      data-locations: classpath:data.sql
+      data-locations:
+        - classpath:data.sql
+        - classpath:attendance_time_set.sql
 
   jpa:
     hibernate:
