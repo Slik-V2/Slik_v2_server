@@ -61,13 +61,14 @@ public class TeacherService {
     public ApiResponse<?> changePassword(ChangePasswordRequest request) {
         Teacher teacher = getTeacher();
 
-        if (bCryptPasswordEncoder.matches(request.new_password(), teacher.getPassword())) {
+        if (bCryptPasswordEncoder.matches(request.newPassword(), teacher.getPassword())) {
             throw ApplicationException.of(TeacherStatusCode.SAME_AS_OLD_PASSWORD);
-        } else if (!bCryptPasswordEncoder.matches(request.current_password(), teacher.getPassword())) {
+        }
+        if (!bCryptPasswordEncoder.matches(request.currentPassword(), teacher.getPassword())) {
             throw new ApplicationException(TeacherStatusCode.PASSWORD_NOT_MATCH);
         }
 
-        teacher.setPassword(bCryptPasswordEncoder.encode(request.new_password()));
+        teacher.setPassword(bCryptPasswordEncoder.encode(request.newPassword()));
         teacherRepository.save(teacher);
         return ApiResponse.ok("비밀번호 변경 성공");
     }

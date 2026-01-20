@@ -28,7 +28,7 @@ public class TeacherController {
     }
 
     @PutMapping("/password")
-    public ApiResponse<?> changePassword(@RequestBody ChangePasswordRequest request) {
+    public ApiResponse<?> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         return teacherService.changePassword(request);
     }
 
