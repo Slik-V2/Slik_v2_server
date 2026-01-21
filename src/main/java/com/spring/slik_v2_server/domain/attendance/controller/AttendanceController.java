@@ -6,12 +6,8 @@ import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeSe
 import com.spring.slik_v2_server.domain.attendance.service.AttendanceService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
@@ -22,14 +18,18 @@ public class AttendanceController {
 
 	private final AttendanceService attendanceService;
 
-	@GetMapping("/schedule")
-	public ApiResponse<AttendanceTimeSetResponse> getSchedule() {
-		return attendanceService.getSchedule();
+	@GetMapping("/schedule/{date}")
+	public ApiResponse<AttendanceTimeSetResponse> getSchedule(
+			@PathVariable("date")
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate) {
+		return attendanceService.getSchedule(localDate);
 	}
 
-	@PutMapping("/schedule")
-	public ApiResponse<AttendanceTimeSetResponse> setSchedule(@RequestBody AttendanceTimeSetRequest request) {
-		return attendanceService.setSchedule(request);
+	@PutMapping("/schedule/{date}")
+	public ApiResponse<AttendanceTimeSetResponse> setSchedule(@RequestBody AttendanceTimeSetRequest request,
+															  @PathVariable("date")
+															  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate) {
+		return attendanceService.setSchedule(request, localDate);
 	}
 
 	@GetMapping("/override/lookup")

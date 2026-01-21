@@ -37,28 +37,29 @@ public class AttendanceService {
 	private String DodamApiKey;
 
 	// 심자 출석체크 가능 시간 조회
-	public ApiResponse<AttendanceTimeSetResponse> getSchedule() {
-		AttendanceTimeSet setTime = attendanceSetRepository.findByToday(LocalDate.now())
-				.orElseGet(() -> {
-					// 오늘 날짜의 데이터가 없으면 기본값으로 생성
-					AttendanceTimeSet newTimeSet = AttendanceTimeSet.builder()
-							.today(LocalDate.now())
-							.session1_1Start(AttendanceTimeEnum.session1_1Start.getDefaultTime())
-							.session1_1End(AttendanceTimeEnum.session1_1End.getDefaultTime())
-							.session1_2Start(AttendanceTimeEnum.session1_2Start.getDefaultTime())
-							.session1_2End(AttendanceTimeEnum.session1_2End.getDefaultTime())
-							.session2_1Start(AttendanceTimeEnum.session2_1Start.getDefaultTime())
-							.session2_1End(AttendanceTimeEnum.session2_1End.getDefaultTime())
-							.session2_2Start(AttendanceTimeEnum.session2_2Start.getDefaultTime())
-							.session2_2End(AttendanceTimeEnum.session2_2End.getDefaultTime())
-							.build();
-					return attendanceSetRepository.save(newTimeSet);
-				});
+	public ApiResponse<AttendanceTimeSetResponse> getSchedule(LocalDate date) {
+		AttendanceTimeSet setTime = attendanceSetRepository.findByToday(date).orElseGet(()
+				-> {
+			AttendanceTimeSet newTimeSet = AttendanceTimeSet.builder()
+					.today(LocalDate.now())
+					.session1_1Start(AttendanceTimeEnum.session1_1Start.getDefaultTime())
+					.session1_1End(AttendanceTimeEnum.session1_1End.getDefaultTime())
+					.session1_2Start(AttendanceTimeEnum.session1_2Start.getDefaultTime())
+					.session1_2End(AttendanceTimeEnum.session1_2End.getDefaultTime())
+					.session2_1Start(AttendanceTimeEnum.session2_1Start.getDefaultTime())
+					.session2_1End(AttendanceTimeEnum.session2_1End.getDefaultTime())
+					.session2_2Start(AttendanceTimeEnum.session2_2Start.getDefaultTime())
+					.session2_2End(AttendanceTimeEnum.session2_2End.getDefaultTime())
+					.build();
+			return attendanceSetRepository.save(newTimeSet);
+		});
+
 		return ApiResponse.ok(AttendanceTimeSetResponse.of(setTime));
 	}
 
 	// 심자 출석체크 가능 시간 설정
-	public ApiResponse<AttendanceTimeSetResponse> setSchedule (AttendanceTimeSetRequest request) {
+	public ApiResponse<AttendanceTimeSetResponse> setSchedule (AttendanceTimeSetRequest request,
+															   LocalDate date) {
 
 		// 심자1 출석체크 가능 범위
 		LocalTime session1_1Start = setDefault(
@@ -100,7 +101,7 @@ public class AttendanceService {
 		);
 
 
-		AttendanceTimeSet attendanceTimeSet = attendanceSetRepository.findByToday(LocalDate.now()).map(exist -> {
+		AttendanceTimeSet attendanceTimeSet = attendanceSetRepository.findByToday(date).map(exist -> {
 			exist.updateTime(
 					session1_1Start,
 					session1_1End,
@@ -114,7 +115,7 @@ public class AttendanceService {
 			return exist;
 		}).orElseGet(() ->
 				AttendanceTimeSet.builder()
-						.today(LocalDate.now())
+						.today(date)
 						.session1_1Start(session1_1Start)
 						.session1_1End(session1_1End)
 						.session1_2Start(session1_2Start)
