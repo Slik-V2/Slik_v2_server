@@ -13,4 +13,5 @@ public interface DodamRepository extends JpaRepository<Dodam, Long> {
 
 	// endAt이 오늘(today)보다 이전인경우 삭제
 	void deleteByEndAtBefore(LocalDate today);
+	List<Dodam> findAllByStartAtLessThanEqualAndEndAtGreaterThanEqual(LocalDate startAt, LocalDate endAt);
 }
