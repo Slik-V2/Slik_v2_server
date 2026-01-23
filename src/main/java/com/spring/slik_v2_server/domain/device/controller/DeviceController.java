@@ -1,10 +1,10 @@
 package com.spring.slik_v2_server.domain.device.controller;
 
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
+import com.spring.slik_v2_server.domain.device.service.AttendanceQueryService;
 import com.spring.slik_v2_server.domain.device.dto.request.FindAttendanceRequest;
 import com.spring.slik_v2_server.domain.device.dto.request.UpdateDeviceRequest;
 import com.spring.slik_v2_server.domain.device.dto.request.VerifyDeviceRequest;
-import com.spring.slik_v2_server.domain.device.dto.response.DeviceResponse;
 import com.spring.slik_v2_server.domain.device.service.DeviceService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import jakarta.validation.Valid;
@@ -22,20 +22,21 @@ import java.util.List;
 @RequestMapping("/device")
 public class DeviceController {
     private final DeviceService deviceService;
+    private final AttendanceQueryService attendanceQueryService;
 
     @PostMapping("/verify")
-    public ApiResponse<DeviceResponse> verify(@Valid @RequestBody VerifyDeviceRequest request) {
-        return deviceService.verifyAttendance(request);
+    public ApiResponse<String> verify(@Valid @RequestBody VerifyDeviceRequest request) {
+        deviceService.verifyAttendance(request);
+        return ApiResponse.ok("출석 인증 요청이 처리되었습니다.");
     }
 
-    @RequestMapping("/override")
     @PostMapping("/lookup")
     public ApiResponse<List<AttendanceTimeResponse>> lookup(@Valid @RequestBody FindAttendanceRequest request) {
-        return deviceService.findAttendanceStatus(request.studnet_id());
+        return attendanceQueryService.findAttendanceStatus(request.studnet_id());
 
     }
 
-    @PatchMapping("/confirm")
+    @PatchMapping("/override/confirm")
     public ApiResponse<String> updateDevice(@Valid @RequestBody UpdateDeviceRequest request) {
         return deviceService.updateAttendanceStatus(request);
     }

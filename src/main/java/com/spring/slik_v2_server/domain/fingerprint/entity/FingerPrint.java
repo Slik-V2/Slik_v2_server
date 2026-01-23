@@ -17,8 +17,8 @@ import lombok.experimental.SuperBuilder;
 public class FingerPrint {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private String id;
 
 	@JsonProperty("student_id")
 	private String studentId; // 학번(선생님의 경우 0000)

@@ -21,8 +21,8 @@ RUN ./gradlew bootJar --no-daemon
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-# 보안을 위한 non-root 유저 생성
-RUN addgroup --gid 1001 appgroup && adduser --uid 1001 --gid 1001 --disabled-password appuser
+# 보안을 위한 non-root 유저 생성 (Debian/Ubuntu 형식)
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 
 COPY --from=server-build /app/build/libs/*.jar app.jar
 

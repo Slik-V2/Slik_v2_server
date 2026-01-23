@@ -35,8 +35,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/users/register", "/users/manage", "/ws/**", "/night_study_list", "/error").permitAll()
+                        .requestMatchers("/auth/users").hasRole("ADMIN")
+                        .requestMatchers("/users/register", "/users/manage", "/ws/**", "/night_study_list", "/error",  "/admin/schedule/**").permitAll()
                         .requestMatchers("/device/**").permitAll()
+                        .requestMatchers("/auth/login", "/auth/isActive/", "/auth/signup").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -19,6 +19,9 @@ public class Dodam {
 	@Id
 	private long studentId;
 
+	@Enumerated(EnumType.STRING)
+	private Type type; // 심자 종류
+
 	private LocalDate startAt;
 	private LocalDate endAt;
 }

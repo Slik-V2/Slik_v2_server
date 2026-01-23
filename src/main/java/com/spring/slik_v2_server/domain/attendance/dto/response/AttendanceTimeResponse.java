@@ -15,8 +15,8 @@ public record AttendanceTimeResponse(
 
 	public static AttendanceTimeResponse of(AttendanceTime attendanceTime) {
 		return new AttendanceTimeResponse(attendanceTime.getToday(),
-				attendanceTime.getStartTime(),
-				attendanceTime.getEndTime());
+				attendanceTime.getS1InTime(),
+				attendanceTime.getS1OutTime());
 	}
 
 	public static List<AttendanceTimeResponse> fromList(List<AttendanceTime> attendanceTimes) {

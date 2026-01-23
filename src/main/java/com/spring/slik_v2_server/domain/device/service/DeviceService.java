@@ -1,17 +1,19 @@
 package com.spring.slik_v2_server.domain.device.service;
 
-import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
-import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeEnum;
+import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeSet;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceType;
+import com.spring.slik_v2_server.domain.attendance.exception.AttendanceStatus;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceRepository;
+import com.spring.slik_v2_server.domain.attendance.repository.AttendanceSetRepository;
 import com.spring.slik_v2_server.domain.device.dto.request.UpdateDeviceRequest;
 import com.spring.slik_v2_server.domain.device.dto.request.VerifyDeviceRequest;
-import com.spring.slik_v2_server.domain.device.dto.response.DeviceResponse;
+import com.spring.slik_v2_server.domain.dodam.entity.Type;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;
 import com.spring.slik_v2_server.domain.fingerprint.repository.FingerPrintRepository;
 import com.spring.slik_v2_server.domain.student.entity.Student;
+import com.spring.slik_v2_server.domain.student.exception.StudentStatus;
 import com.spring.slik_v2_server.domain.student.repository.StudentRepository;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import com.spring.slik_v2_server.global.exception.ApplicationException;
@@ -21,104 +23,124 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class DeviceService {
     private final AttendanceRepository attendanceRepository;
+    private final AttendanceSetRepository attendanceSetRepository;
     private final FingerPrintRepository fingerPrintRepository;
     private final StudentRepository studentRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public ApiResponse<DeviceResponse> verifyAttendance(VerifyDeviceRequest request) {
-        LocalTime time = LocalTime.now();
-        AttendanceType type = determineAttendanceType(time);
+    public void verifyAttendance(VerifyDeviceRequest request) {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
 
-        FingerPrint fingerPrint = fingerPrintRepository.findById(request.id())
-                .orElseThrow(() -> new ApplicationException(FingerPrintStatusCode.STUDENT_NOT_FOUND));
+        try {
+            Student student = studentRepository.findByFingerPrint_Id(request.id())
+                    .orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
 
-        Student student = studentRepository.findByStudentId(fingerPrint.getStudentId())
-                .orElseThrow(() -> new ApplicationException(FingerPrintStatusCode.STUDENT_NOT_FOUND));
+            AttendanceTimeSet timeSet = attendanceSetRepository.findByToday(today)
+                    .orElseThrow(() -> new ApplicationException(AttendanceStatus.NOT_IN_ATTENDANCE_TIME));
 
-        AttendanceTime attendance = attendanceRepository.findByFingerPrintAndTodayAndType(fingerPrint, LocalDate.now(), type)
-                .map(attendanceTime -> {
-                    attendanceTime.setEndTime(LocalTime.now());
-                    return attendanceRepository.save(attendanceTime);
-                }).orElseGet(() -> attendanceRepository.save(AttendanceTime.builder()
-                                .fingerPrint(fingerPrint)
-                                .today(LocalDate.now())
-                                .startTime(LocalTime.now())
-                                .type(type)
-                        .build())
-                );
+            AttendanceTime attendanceTime = attendanceRepository.findByFingerPrint_IdAndToday(request.id(), today)
+                    .orElseThrow(() -> new ApplicationException(AttendanceStatus.NOT_IN_ATTENDANCE_TIME));
 
-        AttendanceTimeResponse response = AttendanceTimeResponse.of(attendance);
-        messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), response);
+            java.util.Optional<AttendanceType> currentSessionTypeOpt = getTypeByTimeRange(now, timeSet);
 
-        return ApiResponse.ok(DeviceResponse.of(student.getName()));
+            if (currentSessionTypeOpt.isEmpty()) {
+                messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                        "status", "FAILED",
+                        "message", "출석 가능 시간이 아닙니다.",
+                        "timestamp", LocalTime.now().toString()
+                ));
+                return;
+            }
+
+            AttendanceType currentSessionType = currentSessionTypeOpt.get();
+
+            if (currentSessionType.name().contains("session2") && attendanceTime.getType() == Type.NIGHT_STUDY_1) {
+                messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                        "status", "FAILED",
+                        "message", "심자1 대상은 심자2에 참여할 수 없습니다.",
+                        "timestamp", LocalTime.now().toString()
+                ));
+                return;
+            }
+
+            LocalTime s1OutTimeBeforeUpdate = attendanceTime.getS1OutTime();
+            attendanceTime.updateAttendanceTime(now, timeSet);
+            LocalTime s1OutTimeAfterUpdate = attendanceTime.getS1OutTime();
+
+            if (s1OutTimeBeforeUpdate == null && s1OutTimeAfterUpdate != null &&
+                attendanceTime.getType() == Type.NIGHT_STUDY_1) {
+                student.increaseAttendanceDate();
+            }
+
+            attendanceRepository.save(attendanceTime);
+            studentRepository.save(student);
+
+            messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                    "status", "SUCCESS",
+                    "name", student.getName(),
+                    "timestamp", LocalTime.now().toString()
+            ));
+        } catch (ApplicationException e) {
+            messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                    "status", "FAILED",
+                    "message", e.getMessage(),
+                    "timestamp", LocalTime.now().toString()
+            ));
+        }
     }
 
-    public ApiResponse<List<AttendanceTimeResponse>> findAttendanceStatus(String id) {
-        LocalDate today = LocalDate.now();
 
-        FingerPrint fingerPrint = fingerPrintRepository.findByStudentId(id)
-                .orElseThrow(() -> new ApplicationException(FingerPrintStatusCode.STUDENT_NOT_FOUND));
+    private java.util.Optional<AttendanceType> getTypeByTimeRange(LocalTime now, AttendanceTimeSet timeSet) {
+        return java.util.Arrays.stream(AttendanceType.values())
+                .filter(type -> isTimeInRange(now, type, timeSet))
+                .findFirst();
+    }
 
-        List<AttendanceTime> attendanceTimes = attendanceRepository.findAllByFingerPrintAndTodayBetween(fingerPrint, today, today);
-        List<AttendanceTimeResponse> attendanceStatus = AttendanceTimeResponse.fromList(attendanceTimes);
-        return ApiResponse.ok(attendanceStatus);
+    private boolean isTimeInRange(LocalTime now, AttendanceType type, AttendanceTimeSet timeSet) {
+        return switch (type) {
+            case session1_1Start, session1_1End -> isInRange(now, timeSet.getSession1_1Start(), timeSet.getSession1_1End());
+            case session1_2Start, session1_2End -> isInRange(now, timeSet.getSession1_2Start(), timeSet.getSession1_2End());
+            case session2_1Start, session2_1End -> isInRange(now, timeSet.getSession2_1Start(), timeSet.getSession2_1End());
+            case session2_2Start, session2_2End -> isInRange(now, timeSet.getSession2_2Start(), timeSet.getSession2_2End());
+        };
+    }
+
+    private boolean isInRange(LocalTime now, LocalTime start, LocalTime end) {
+        return (now.isAfter(start) || now.equals(start)) && (now.isBefore(end) || now.equals(end));
     }
 
     public ApiResponse<String> updateAttendanceStatus(UpdateDeviceRequest request) {
         LocalDate today = LocalDate.now();
-        LocalTime now = LocalTime.now();
 
-        AttendanceType type = determineAttendanceType(now);
-
-        FingerPrint fingerPrint = fingerPrintRepository.findByStudentId(request.student_id())
+        FingerPrint fingerPrint = fingerPrintRepository.findByStudentId(request.studentId())
                 .orElseThrow(() -> new ApplicationException(FingerPrintStatusCode.STUDENT_NOT_FOUND));
 
-        attendanceRepository.findByFingerPrintAndTodayAndType(fingerPrint, today, type)
-                .map(attendanceTime -> {
-                    attendanceTime.setType(type);
-                    return attendanceRepository.save(attendanceTime);
-                })
-                .orElseGet(() -> attendanceRepository.save(AttendanceTime.builder()
-                        .today(today)
-                        .fingerPrint(fingerPrint)
-                        .type(request.new_status())
-                        .build()));
+        AttendanceTime attendanceTime = attendanceRepository.findByFingerPrint_IdAndToday(fingerPrint.getId(), today)
+                .orElseThrow(() -> new ApplicationException(AttendanceStatus.NOT_IN_ATTENDANCE_TIME));
 
-        return ApiResponse.ok("변경되었습니다.");
-    }
-
-    private AttendanceType determineAttendanceType(LocalTime now) {
-        for (AttendanceType type : AttendanceType.values()) {
-            Optional<AttendanceTime> scheduleOpt = attendanceRepository.findByType(type);
-
-            if (scheduleOpt.isPresent()) {
-                AttendanceTime schedule = scheduleOpt.get();
-                LocalTime startTime = schedule.getStartTime();
-                LocalTime endTime = schedule.getEndTime();
-
-                if (startTime != null && endTime != null &&
-                        now.isAfter(startTime.minusSeconds(1)) &&
-                        now.isBefore(endTime.plusSeconds(1))) {
-                    return type;
-                }
-            } else {
-                AttendanceTimeEnum defaultTime = type.getDefaultTime();
-                LocalTime defaultStart = defaultTime.getDefaultStartTime();
-                LocalTime defaultEnd = defaultTime.getDefaultEndTime();
-
-                if (now.isAfter(defaultStart.minusSeconds(1)) &&
-                        now.isBefore(defaultEnd.plusSeconds(1))) {
-                    return type;
-                }
-            }
+        switch (request.targetSession().toUpperCase()) {
+            case "SESSION_1" -> attendanceTime.setS1Status(request.newStatus());
+            case "SESSION_2" -> attendanceTime.setS2Status(request.newStatus());
+            default -> throw new ApplicationException(AttendanceStatus.NOT_IN_ATTENDANCE_TIME);
         }
-        return null;
+
+        attendanceRepository.save(attendanceTime);
+
+        messagingTemplate.convertAndSend("/topic/attendance/update", (Object) Map.of(
+                "studentId", request.studentId(),
+                "session", request.targetSession(),
+                "status", request.newStatus(),
+                "timestamp", LocalTime.now().toString()
+        ));
+
+        return ApiResponse.ok("출석 상태가 변경되었습니다.");
     }
+
 }

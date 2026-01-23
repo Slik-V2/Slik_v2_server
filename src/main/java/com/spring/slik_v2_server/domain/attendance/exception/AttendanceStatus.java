@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 public enum AttendanceStatus implements StatusCode {
 
     NOT_IN_ATTENDANCE_TIME(HttpStatus.BAD_REQUEST, "ATTENDANCE_TIME_INVALID", "출석 가능 시간이 아닙니다."),
-    DATA_NOT_FOUND(HttpStatus.NOT_FOUND, "DATA_NOT_FOUND", "조회할 데이터를 찾을 수 없습니다.");
+    DATA_NOT_FOUND(HttpStatus.NOT_FOUND, "DATA_NOT_FOUND", "조회할 데이터를 찾을 수 없습니다."),
+    DATE_NOT_FOUND(HttpStatus.NOT_FOUND, "DATE_NOT_FOUND", "해당 날짜의 자습 시간을 조회할 수 없습니다.");
 
     private HttpStatus httpStatus;
     private String code;

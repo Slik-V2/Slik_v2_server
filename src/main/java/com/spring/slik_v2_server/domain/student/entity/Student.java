@@ -24,11 +24,23 @@ public class Student {
 
     private String studentId;
     private String name;
+    @Builder.Default
+    private int totalDate = 0;
+    @Builder.Default
+    private int attendanceDate = 0;
 
     @OneToOne
     private FingerPrint fingerPrint;
 
     public void updateFingerPrint(FingerPrint fingerPrint) {
         this.fingerPrint = fingerPrint;
+    }
+
+    public void plusDate() {
+        this.totalDate++;
+    }
+
+    public void increaseAttendanceDate() {
+        this.attendanceDate++;
     }
 }
