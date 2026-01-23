@@ -18,8 +18,8 @@ public record StudentAttendanceResponse(
 
 	public static StudentAttendanceResponse of(AttendanceTime attendanceTime) {
 		return new StudentAttendanceResponse(
-				attendanceTime.getFingerPrint().getStudentId(),
-				attendanceTime.getStudent().getName(),
+				attendanceTime.getFingerPrint() != null ? attendanceTime.getFingerPrint().getStudentId() : null,
+				attendanceTime.getStudent() != null ? attendanceTime.getStudent().getName() : null,
 				attendanceTime.getS1Status(),
 				attendanceTime.getS1InTime(),
 				attendanceTime.getS1OutTime(),
