@@ -22,7 +22,7 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # 보안을 위한 non-root 유저 생성
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN groupadd -r appgroup && useradd -r -g appgroup -s /bin/false appuser
 
 COPY --from=build /app/build/libs/*.jar app.jar
 
