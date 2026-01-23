@@ -3,7 +3,7 @@ package com.spring.slik_v2_server.domain.fingerprint.controller;
 import com.spring.slik_v2_server.domain.fingerprint.dto.request.FingerPrintRequest;
 import com.spring.slik_v2_server.domain.fingerprint.dto.response.FingerPrintResponse;
 import com.spring.slik_v2_server.domain.fingerprint.service.FingerPrintService;
-import com.spring.slik_v2_server.domain.student.service.StudentService;
+import com.spring.slik_v2_server.domain.student.Service.StudentService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

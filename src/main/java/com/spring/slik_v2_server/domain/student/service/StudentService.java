@@ -1,4 +1,4 @@
-package com.spring.slik_v2_server.domain.student.service;
+package com.spring.slik_v2_server.domain.student.Service;
 
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;
@@ -19,7 +19,7 @@ public class StudentService {
     private final FingerPrintRepository fingerPrintRepository;
 
     public ApiResponse<HttpStatus> saveStudentInfo(String studentId) {
-        Student student = studentRepository.findByStudentId(studentId)
+        Student student = studentRepository.findByStudentId(String.valueOf(studentId))
                 .orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
 
         FingerPrint fingerPrint = fingerPrintRepository.findByStudentId(studentId)

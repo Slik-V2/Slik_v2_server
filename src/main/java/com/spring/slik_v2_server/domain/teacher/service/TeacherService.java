@@ -1,11 +1,13 @@
 package com.spring.slik_v2_server.domain.teacher.service;
 
 import  com.spring.slik_v2_server.domain.teacher.dto.request.ChangePasswordRequest;
+import com.spring.slik_v2_server.domain.teacher.dto.request.ChangeRoleRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.IsActiveRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignInRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignUpRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.response.GetTeacherResponse;
 import com.spring.slik_v2_server.domain.teacher.dto.response.LoginResponse;
+import com.spring.slik_v2_server.domain.teacher.entity.Role;
 import com.spring.slik_v2_server.domain.teacher.entity.Teacher;
 import com.spring.slik_v2_server.domain.teacher.exception.TeacherStatusCode;
 import com.spring.slik_v2_server.domain.teacher.repository.TeacherRepository;
@@ -42,7 +44,6 @@ public class TeacherService {
                 .password(bCryptPasswordEncoder.encode(request.password()))
                 .name(request.name())
                 .email(request.email())
-                .phone(request.phone())
                 .build());
         return ApiResponse.ok("선생님 계정이 생성되었습니다.");
     }
@@ -87,5 +88,18 @@ public class TeacherService {
                 GetTeacherResponse::of
         ).collect(Collectors.toList());
         return ApiResponse.ok(responses);
+    }
+
+    public ApiResponse<?> isRole(ChangeRoleRequest request, String userId) {
+        Teacher teacher = teacherRepository.findByUsername(userId)
+                .orElseThrow(() -> new ApplicationException(TeacherStatusCode.TEACHER_NOT_FOUND));
+
+        switch (request.role()) {
+            case "teacher" -> teacher.setRole(Role.TEACHER);
+            case "admin" -> teacher.setRole(Role.ADMIN);
+        }
+        teacherRepository.save(teacher);
+
+        return ApiResponse.ok(userId+"님의 role값이 변경되었습니다.");
     }
 }

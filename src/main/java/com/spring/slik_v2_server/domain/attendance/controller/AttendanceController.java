@@ -2,6 +2,7 @@ package com.spring.slik_v2_server.domain.attendance.controller;
 
 import com.spring.slik_v2_server.domain.attendance.dto.request.AttendanceStatusRequest;
 import com.spring.slik_v2_server.domain.attendance.dto.request.AttendanceTimeSetRequest;
+import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeSetResponse;
 import com.spring.slik_v2_server.domain.attendance.service.AttendanceService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
@@ -10,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
@@ -33,7 +35,7 @@ public class AttendanceController {
 	}
 
 	@GetMapping("/override/lookup")
-	public ApiResponse<?> readAttendanceStatus(@RequestBody AttendanceStatusRequest request) {
+	public ApiResponse<List<AttendanceTimeResponse>> readAttendanceStatus(@RequestBody AttendanceStatusRequest request) {
 		return attendanceService.findAttendanceStatus(request.student_id());
 	}
 

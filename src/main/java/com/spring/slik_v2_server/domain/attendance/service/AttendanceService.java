@@ -14,15 +14,14 @@ import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeEnum;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeSet;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceRepository;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceSetRepository;
+import com.spring.slik_v2_server.domain.dodam.entity.Type;
+import com.spring.slik_v2_server.domain.dodam.repository.DodamRepository;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;
 import com.spring.slik_v2_server.domain.fingerprint.repository.FingerPrintRepository;
 import com.spring.slik_v2_server.domain.student.entity.Student;
 import com.spring.slik_v2_server.domain.student.exception.StudentStatus;
 import com.spring.slik_v2_server.domain.student.repository.StudentRepository;
-import com.spring.slik_v2_server.domain.dodam.entity.Dodam;
-import com.spring.slik_v2_server.domain.dodam.entity.Type;
-import com.spring.slik_v2_server.domain.dodam.repository.DodamRepository;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import com.spring.slik_v2_server.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +33,6 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -211,71 +209,36 @@ public class AttendanceService {
 	}
 
 	private String judgeAttendanceStatus(AttendanceTime attendance) {
+		// 데이터가 없으면 null
 		if (attendance == null) {
 			return null;
 		}
 
 		Type type = attendance.getType();
-		LocalDate today = LocalDate.now();
-		boolean isToday = attendance.getToday().equals(today);
 
 		if (type == Type.NIGHT_STUDY_1) {
-			return judgeS1Status(attendance, isToday);
-		} else if (type == Type.NIGHT_STUDY_2) {
-			return judgeS1S2Status(attendance, isToday);
+			AttendanceStatus s1Status = attendance.getS1Status();
+			if (s1Status == AttendanceStatus.RETURNED) {
+				return "present";
+			}
+			if (s1Status == AttendanceStatus.STUDYING || s1Status == AttendanceStatus.NONE) {
+				return "absent";
+			}
+		}
+
+		if (type == Type.NIGHT_STUDY_2) {
+			AttendanceStatus s2Status = attendance.getS2Status();
+
+			if (s2Status == AttendanceStatus.RETURNED) {
+				return "present";
+			}
+
+			if (s2Status == AttendanceStatus.STUDYING || s2Status == AttendanceStatus.NONE) {
+				return "absent";
+			}
 		}
 
 		return null;
 	}
 
-	private String judgeS1Status(AttendanceTime attendance, boolean isToday) {
-		boolean hasInTime = attendance.getS1InTime() != null;
-		boolean hasOutTime = attendance.getS1OutTime() != null;
-		boolean isStudying = attendance.getS1Status() == AttendanceStatus.STUDYING;
-
-		if (isToday) {
-			if (hasOutTime && isStudying) {
-				return "present";
-			} else if (hasInTime && isStudying) {
-				return "progress";
-			} else {
-				return "absent";
-			}
-		} else {
-			if (hasOutTime && isStudying) {
-				return "present";
-			} else if (!hasInTime || !hasOutTime) {
-				return "absent";
-			} else {
-				return "progress";
-			}
-		}
-	}
-
-	private String judgeS1S2Status(AttendanceTime attendance, boolean isToday) {
-		boolean s1HasOutTime = attendance.getS1OutTime() != null;
-		boolean s2HasInTime = attendance.getS2InTime() != null;
-		boolean s2HasOutTime = attendance.getS2OutTime() != null;
-		boolean s2IsStudying = attendance.getS2Status() == AttendanceStatus.STUDYING;
-
-		if (isToday) {
-			if (s2HasOutTime && s2IsStudying) {
-				return "present";
-			} else if (s2HasInTime && s2IsStudying) {
-				return "progress";
-			} else if (s1HasOutTime) {
-				return "progress";
-			} else {
-				return "absent";
-			}
-		} else {
-			if (s2HasOutTime && s2IsStudying) {
-				return "present";
-			} else if (!s1HasOutTime) {
-				return "absent";
-			} else {
-				return "progress";
-			}
-		}
-	}
 }

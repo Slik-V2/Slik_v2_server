@@ -52,35 +52,54 @@ public class AttendanceTime {
 		this.s1OutTime = s1OutTime;
 	}
 
-	public void updateAttendanceTime(LocalTime now, AttendanceTimeSet timeSet) {
-		// Session 1-1: 출석 (S1InTime)
+	public String updateAttendanceTime(LocalTime now, AttendanceTimeSet timeSet) {
 		if (isTimeInRange(now, timeSet.getSession1_1Start(), timeSet.getSession1_1End())) {
 			if (this.s1InTime == null) {
 				this.s1InTime = now;
 				this.s1Status = AttendanceStatus.STUDYING;
+				return "S1_IN";
+			} else {
+				return "S1_IN_ALREADY";
 			}
 		}
-		// Session 1-2: 복귀 (S1OutTime)
+
 		else if (isTimeInRange(now, timeSet.getSession1_2Start(), timeSet.getSession1_2End())) {
 			if (this.s1OutTime == null && this.s1InTime != null) {
 				this.s1OutTime = now;
-				this.s1Status = AttendanceStatus.STUDYING;
+				this.s1Status = AttendanceStatus.RETURNED;
+				return "S1_OUT";
+			} else if (this.s1InTime == null) {
+				return "S1_OUT_NO_IN";
+			} else {
+				return "S1_OUT_ALREADY";
 			}
 		}
-		// Session 2-1: 출석 (S2InTime) - S1OutTime이 null이면 진행 불가
+
 		else if (isTimeInRange(now, timeSet.getSession2_1Start(), timeSet.getSession2_1End())) {
 			if (this.s1OutTime != null && this.s2InTime == null) {
 				this.s2InTime = now;
 				this.s2Status = AttendanceStatus.STUDYING;
+				return "S2_IN";
+			} else if (this.s1OutTime == null) {
+				return "S2_IN_NO_S1_OUT";
+			} else {
+				return "S2_IN_ALREADY";
 			}
 		}
-		// Session 2-2: 복귀 (S2OutTime) - S1OutTime이 null이면 진행 불가
+
 		else if (isTimeInRange(now, timeSet.getSession2_2Start(), timeSet.getSession2_2End())) {
 			if (this.s1OutTime != null && this.s2OutTime == null && this.s2InTime != null) {
 				this.s2OutTime = now;
-				this.s2Status = AttendanceStatus.STUDYING;
+				this.s2Status = AttendanceStatus.RETURNED;
+				return "S2_OUT";
+			} else if (this.s2InTime == null) {
+				return "S2_OUT_NO_IN";
+			} else {
+				return "S2_OUT_ALREADY";
 			}
 		}
+
+		return "NO_UPDATE";
 	}
 
 	private boolean isTimeInRange(LocalTime now, LocalTime start, LocalTime end) {

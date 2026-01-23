@@ -3,6 +3,7 @@ package com.spring.slik_v2_server.domain.device.service;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.LiveAttendanceResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.StudentAttendanceResponse;
+import com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceRepository;
 import com.spring.slik_v2_server.domain.dodam.entity.Dodam;
@@ -69,7 +70,8 @@ public class AttendanceQueryService {
                             .today(today)
                             .fingerPrint(fingerPrint)
                             .type(dodam.getType())
-                            .s1Status(com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus.NONE)
+                            .s1Status(AttendanceStatus.NONE)
+                            .s2Status(AttendanceStatus.NONE)
                             .student(student)
                             .build();
                 })

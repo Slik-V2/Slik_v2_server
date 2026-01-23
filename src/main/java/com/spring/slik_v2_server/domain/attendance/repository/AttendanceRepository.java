@@ -5,6 +5,7 @@ import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceType;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.student.entity.Student;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,7 +21,7 @@ public interface  AttendanceRepository extends JpaRepository<AttendanceTime, Lon
 
 	List<AttendanceTime> findAllByToday(LocalDate date);
 
-	Optional<AttendanceTime> findByFingerPrint_IdAndToday(Long fingerPrintId, LocalDate today);
+	Optional<AttendanceTime> findByStudentAndToday(Student student, LocalDate today);
 
 	@Query("SELECT a FROM AttendanceTime a WHERE a.student = :student AND (a.s1Status = :status OR a.s2Status = :status) AND a.today BETWEEN :startDate AND :endDate")
 	List<AttendanceTime> findAllByStudentAndAttendanceStatusIsNoneAndTodayBetween(

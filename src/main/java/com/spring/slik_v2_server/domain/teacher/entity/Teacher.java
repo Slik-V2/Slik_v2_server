@@ -28,7 +28,6 @@ public class Teacher {
     private String password;
     private String name;
     private String email;
-    private String phone;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
@@ -42,5 +41,9 @@ public class Teacher {
 
     public void setActive(boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

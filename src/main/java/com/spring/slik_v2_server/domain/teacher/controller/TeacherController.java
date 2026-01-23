@@ -1,6 +1,7 @@
 package com.spring.slik_v2_server.domain.teacher.controller;
 
 import com.spring.slik_v2_server.domain.teacher.dto.request.ChangePasswordRequest;
+import com.spring.slik_v2_server.domain.teacher.dto.request.ChangeRoleRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.IsActiveRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignInRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignUpRequest;
@@ -41,5 +42,10 @@ public class TeacherController {
     @PatchMapping("/active/{id}")
     public ApiResponse<Boolean> isActive(@PathVariable String id, @RequestBody IsActiveRequest request) {
         return teacherService.isActive(id, request);
+    }
+
+    @PutMapping("/users/role/{userId}")
+    public ApiResponse<?> isRole(@Valid @RequestBody ChangeRoleRequest request, @PathVariable String userId) {
+        return teacherService.isRole(request,userId);
     }
 }
