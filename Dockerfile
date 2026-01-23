@@ -21,6 +21,10 @@ RUN ./gradlew bootJar --no-daemon
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
+# 타임존 설정 (Asia/Seoul)
+ENV TZ=Asia/Seoul
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # 보안을 위한 non-root 유저 생성 (Debian/Ubuntu 형식)
 RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 
@@ -31,4 +35,4 @@ USER appuser
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Duser.timezone=Asia/Seoul", "-jar", "app.jar"]
