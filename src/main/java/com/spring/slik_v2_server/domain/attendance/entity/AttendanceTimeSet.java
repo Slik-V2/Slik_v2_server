@@ -21,6 +21,7 @@ public class AttendanceTimeSet {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(unique = true)
 	private LocalDate today;
 
 	// 심자1 출석체크 가능 범위
