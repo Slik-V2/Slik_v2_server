@@ -9,6 +9,7 @@ import com.spring.slik_v2_server.domain.device.service.DeviceService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

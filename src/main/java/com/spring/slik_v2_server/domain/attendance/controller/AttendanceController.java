@@ -59,7 +59,7 @@ public class AttendanceController {
 		return attendanceService.absences(studentId, year, month);
 	}
 
-	@GetMapping("/students/{studentId}/calendar")
+	@GetMapping("/students/{studentId}/attendance")
 	public ApiResponse<?> calendar(
 			@PathVariable String studentId,
 			@RequestParam int year,

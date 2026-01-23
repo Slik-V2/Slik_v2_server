@@ -41,9 +41,6 @@ public class AttendanceQueryService {
         return ApiResponse.ok(attendanceStatus);
     }
 
-    /**
-     * 실시간 전체 출석 현황 조회
-     */
     public ApiResponse<LiveAttendanceResponse> getLiveAttendance(LocalDate date) {
         List<StudentAttendanceResponse> attendanceResponses = attendanceRepository.findAllByToday(date).stream()
                 .map(StudentAttendanceResponse::of)
