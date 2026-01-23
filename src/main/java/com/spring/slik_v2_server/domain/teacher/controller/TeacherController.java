@@ -37,7 +37,7 @@ public class TeacherController {
         return teacherService.getTeachers();
     }
 
-    @PostMapping("/active/{id}")
+    @PatchMapping("/active/{id}")
     public ApiResponse<Boolean> isActive(@PathVariable Long id) {
         return teacherService.isActive(id);
     }
