@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record FingerPrintResponse(
-		String id,
+		Long id,
 		String studentId,
 		String encrypted_template
 ) {

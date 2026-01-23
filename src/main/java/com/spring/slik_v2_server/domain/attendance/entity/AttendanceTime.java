@@ -1,11 +1,7 @@
 package com.spring.slik_v2_server.domain.attendance.entity;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
-import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.dodam.entity.Type;
-
+import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.student.entity.Student;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,6 +15,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -40,8 +39,7 @@ public class AttendanceTime {
 	private Type type; //심자 종류
 
 	private AttendanceStatus s1Status; //심1 상태
-	@Builder.Default
-	private LocalTime s1InTime = LocalTime.now(); //심1 출석 시간
+	private LocalTime s1InTime; //심1 출석 시간
 	private LocalTime s1OutTime; // 심1 퇴실 시간
 	private AttendanceStatus s2Status; //심2 상태
 	private LocalTime s2InTime; // 심2 출석 시간

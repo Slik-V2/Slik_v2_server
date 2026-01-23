@@ -43,7 +43,6 @@ public class FingerPrintService {
 		return ApiResponse.ok(HttpStatus.CREATED);
 	}
 
-	// 등록된 사용자 조회
 	public ApiResponse<List<FingerPrintResponse>> read(HttpServletRequest request) {
 		if (!secretKey.equals(request.getHeader("X-API-KEY"))) {
 			throw new ApplicationException(FingerPrintStatusCode.INVALID_API_KEY);

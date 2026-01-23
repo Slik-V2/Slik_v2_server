@@ -20,7 +20,7 @@ public interface  AttendanceRepository extends JpaRepository<AttendanceTime, Lon
 
 	List<AttendanceTime> findAllByToday(LocalDate date);
 
-	Optional<AttendanceTime> findByFingerPrint_IdAndToday(String fingerPrintId, LocalDate today);
+	Optional<AttendanceTime> findByFingerPrint_IdAndToday(Long fingerPrintId, LocalDate today);
 
 	@Query("SELECT a FROM AttendanceTime a WHERE a.student = :student AND (a.s1Status = :status OR a.s2Status = :status) AND a.today BETWEEN :startDate AND :endDate")
 	List<AttendanceTime> findAllByStudentAndAttendanceStatusIsNoneAndTodayBetween(

@@ -10,5 +10,5 @@ public interface FingerPrintRepository extends JpaRepository<FingerPrint, Long> 
 
 	Optional<FingerPrint> findByStudentId(String studentId);
 
-	Optional<FingerPrint> findById(String id);
+	Optional<FingerPrint> findById(Long id);
 }
