@@ -4,9 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
+import com.spring.slik_v2_server.domain.dodam.entity.Type;
 
 import com.spring.slik_v2_server.domain.student.entity.Student;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,6 +36,9 @@ public class AttendanceTime {
 
 	private LocalDate today; //날짜
 
+	@Enumerated(EnumType.STRING)
+	private Type type; //심자 종류
+
 	private AttendanceStatus s1Status; //심1 상태
 	@Builder.Default
 	private LocalTime s1InTime = LocalTime.now(); //심1 출석 시간
@@ -42,7 +48,7 @@ public class AttendanceTime {
 	private LocalTime s2OutTime; // 심2 퇴실한 시
 
 	@OneToOne
-	private Student student;
+	private Student student; //학생정보
 
 	public void setEndTime(LocalTime s1OutTime) {
 		this.s1OutTime = s1OutTime;

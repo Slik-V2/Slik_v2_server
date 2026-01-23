@@ -1,12 +1,9 @@
 package com.spring.slik_v2_server.domain.attendance.dto.response;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 public record StudentAttendanceResponse(
 		String studentId,

@@ -43,4 +43,27 @@ public class AttendanceController {
 			) {
 		return attendanceService.getliveAttendanceStatus(date);
 	}
+
+	@GetMapping("/students/{studentId}")
+	public ApiResponse<?> getStudentInfo(
+			@PathVariable String studentId
+	) {
+		return attendanceService.getStudentInfo(studentId);
+	}
+
+	@GetMapping("/students/{studentId}/absences")
+	public ApiResponse<?> absences(
+			@PathVariable String studentId,
+			@RequestParam int year,
+			@RequestParam int month) {
+		return attendanceService.absences(studentId, year, month);
+	}
+
+	@GetMapping("/students/{studentId}/calendar")
+	public ApiResponse<?> calendar(
+			@PathVariable String studentId,
+			@RequestParam int year,
+			@RequestParam int month) {
+		return attendanceService.calendar(year, month, studentId);
+	}
 }

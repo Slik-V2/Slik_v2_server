@@ -1,8 +1,5 @@
 package com.spring.slik_v2_server.domain.device.service;
 
-import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
-import com.spring.slik_v2_server.domain.attendance.dto.response.LiveAttendanceResponse;
-import com.spring.slik_v2_server.domain.attendance.dto.response.StudentAttendanceResponse;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeSet;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceType;
@@ -11,9 +8,7 @@ import com.spring.slik_v2_server.domain.attendance.repository.AttendanceReposito
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceSetRepository;
 import com.spring.slik_v2_server.domain.device.dto.request.UpdateDeviceRequest;
 import com.spring.slik_v2_server.domain.device.dto.request.VerifyDeviceRequest;
-import com.spring.slik_v2_server.domain.device.dto.response.DeviceResponse;
-import com.spring.slik_v2_server.domain.dodam.entity.Dodam;
-import com.spring.slik_v2_server.domain.dodam.repository.DodamRepository;
+import com.spring.slik_v2_server.domain.dodam.entity.Type;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;
 import com.spring.slik_v2_server.domain.fingerprint.repository.FingerPrintRepository;
@@ -28,11 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,48 +32,70 @@ public class DeviceService {
     private final AttendanceSetRepository attendanceSetRepository;
     private final FingerPrintRepository fingerPrintRepository;
     private final StudentRepository studentRepository;
-    private final DodamRepository dodamRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public ApiResponse<DeviceResponse> verifyAttendance(VerifyDeviceRequest request) {
+    public void verifyAttendance(VerifyDeviceRequest request) {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
 
-        Student student = studentRepository.findByFingerPrint_Id(request.id())
-                .orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
+        try {
+            Student student = studentRepository.findByFingerPrint_Id(request.id())
+                    .orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
 
-        AttendanceTimeSet timeSet = attendanceSetRepository.findByToday(today)
-                .orElseThrow(() -> new ApplicationException(AttendanceStatus.NOT_IN_ATTENDANCE_TIME));
+            AttendanceTimeSet timeSet = attendanceSetRepository.findByToday(today)
+                    .orElseThrow(() -> new ApplicationException(AttendanceStatus.NOT_IN_ATTENDANCE_TIME));
 
-        AttendanceTime attendanceTime = attendanceRepository.findByFingerPrint_IdAndToday(request.id(), today)
-                .orElseThrow(() -> new ApplicationException(AttendanceStatus.NOT_IN_ATTENDANCE_TIME));
+            AttendanceTime attendanceTime = attendanceRepository.findByFingerPrint_IdAndToday(request.id(), today)
+                    .orElseThrow(() -> new ApplicationException(AttendanceStatus.NOT_IN_ATTENDANCE_TIME));
 
-        attendanceTime.updateAttendanceTime(now, timeSet);
-        attendanceRepository.save(attendanceTime);
+            java.util.Optional<AttendanceType> currentSessionTypeOpt = getTypeByTimeRange(now, timeSet);
 
-        messagingTemplate.convertAndSend("/topic/device/" + request.device_id());
+            if (currentSessionTypeOpt.isEmpty()) {
+                messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                        "status", "FAILED",
+                        "message", "출석 가능 시간이 아닙니다.",
+                        "timestamp", LocalTime.now().toString()
+                ));
+                return;
+            }
 
-        return ApiResponse.ok(DeviceResponse.of(student.getName()));
+            AttendanceType currentSessionType = currentSessionTypeOpt.get();
+
+            if (currentSessionType.name().contains("session2") && attendanceTime.getType() == Type.NIGHT_STUDY_1) {
+                messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                        "status", "FAILED",
+                        "message", "심자1 대상은 심자2에 참여할 수 없습니다.",
+                        "timestamp", LocalTime.now().toString()
+                ));
+                return;
+            }
+
+            LocalTime s1OutTimeBeforeUpdate = attendanceTime.getS1OutTime();
+            attendanceTime.updateAttendanceTime(now, timeSet);
+            LocalTime s1OutTimeAfterUpdate = attendanceTime.getS1OutTime();
+
+            if (s1OutTimeBeforeUpdate == null && s1OutTimeAfterUpdate != null &&
+                attendanceTime.getType() == Type.NIGHT_STUDY_1) {
+                student.increaseAttendanceDate();
+            }
+
+            attendanceRepository.save(attendanceTime);
+            studentRepository.save(student);
+
+            messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                    "status", "SUCCESS",
+                    "name", student.getName(),
+                    "timestamp", LocalTime.now().toString()
+            ));
+        } catch (ApplicationException e) {
+            messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                    "status", "FAILED",
+                    "message", e.getMessage(),
+                    "timestamp", LocalTime.now().toString()
+            ));
+        }
     }
 
-    public ApiResponse<List<AttendanceTimeResponse>> findAttendanceStatus(String id) {
-        LocalDate today = LocalDate.now();
-
-        FingerPrint fingerPrint = fingerPrintRepository.findByStudentId(id)
-                .orElseThrow(() -> new ApplicationException(FingerPrintStatusCode.STUDENT_NOT_FOUND));
-
-        List<AttendanceTime> attendanceTimes = attendanceRepository.findAllByFingerPrintAndTodayBetween(fingerPrint, today, today);
-        List<AttendanceTimeResponse> attendanceStatus = AttendanceTimeResponse.fromList(attendanceTimes);
-        return ApiResponse.ok(attendanceStatus);
-    }
-
-    public ApiResponse<LiveAttendanceResponse> getLiveAttendance(LocalDate date) {
-        List<StudentAttendanceResponse> attendanceResponses = attendanceRepository.findAllByToday(date).stream()
-                .map(StudentAttendanceResponse::of)
-                .collect(Collectors.toList());
-
-        return ApiResponse.ok(LiveAttendanceResponse.of(date, attendanceResponses));
-    }
 
     private java.util.Optional<AttendanceType> getTypeByTimeRange(LocalTime now, AttendanceTimeSet timeSet) {
         return java.util.Arrays.stream(AttendanceType.values())
@@ -130,47 +143,4 @@ public class DeviceService {
         return ApiResponse.ok("출석 상태가 변경되었습니다.");
     }
 
-    public void createDailyAttendanceRecords() {
-        LocalDate today = LocalDate.now();
-
-        // 1. 활동 중인 모든 Dodam 조회
-        List<Dodam> activeDodams = dodamRepository.findAllByStartAtLessThanEqualAndEndAtGreaterThanEqual(today, today);
-
-        if (activeDodams.isEmpty()) {
-            return;
-        }
-
-        // 2. 학생 ID 추출
-        List<Long> studentIds = activeDodams.stream()
-                .map(Dodam::getStudentId)
-                .distinct()
-                .toList();
-
-        // 3. 필요한 FingerPrint들 한 번에 조회
-        Map<Long, FingerPrint> fingerPrintMap = fingerPrintRepository
-                .findAllById(studentIds)
-                .stream()
-                .collect(Collectors.toMap(fp -> Long.parseLong(fp.getId()), Function.identity()));
-
-        // 4. 생성할 AttendanceTime 배치로 준비
-        List<AttendanceTime> newAttendances = activeDodams.stream()
-                .map(dodam -> {
-                    FingerPrint fingerPrint = fingerPrintMap.get(dodam.getStudentId());
-                    if (fingerPrint == null) {
-                        return null;
-                    }
-                    return AttendanceTime.builder()
-                            .today(today)
-                            .fingerPrint(fingerPrint)
-                            .s1Status(com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus.STUDYING)
-                            .build();
-                })
-                .filter(Objects::nonNull)
-                .toList();
-
-        // 5. 배치 저장
-        if (!newAttendances.isEmpty()) {
-            attendanceRepository.saveAll(newAttendances);
-        }
-    }
 }

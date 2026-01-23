@@ -1,10 +1,14 @@
 package com.spring.slik_v2_server.domain.attendance.service;
 
 import com.spring.slik_v2_server.domain.attendance.dto.request.AttendanceTimeSetRequest;
+import com.spring.slik_v2_server.domain.attendance.dto.response.AbsencesResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeSetResponse;
+import com.spring.slik_v2_server.domain.attendance.dto.response.CalendarResponse;
+import com.spring.slik_v2_server.domain.attendance.dto.response.GetStudentInfoResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.LiveAttendanceResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.StudentAttendanceResponse;
+import com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeEnum;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeSet;
@@ -14,7 +18,11 @@ import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;
 import com.spring.slik_v2_server.domain.fingerprint.repository.FingerPrintRepository;
 import com.spring.slik_v2_server.domain.student.entity.Student;
+import com.spring.slik_v2_server.domain.student.exception.StudentStatus;
 import com.spring.slik_v2_server.domain.student.repository.StudentRepository;
+import com.spring.slik_v2_server.domain.dodam.entity.Dodam;
+import com.spring.slik_v2_server.domain.dodam.entity.Type;
+import com.spring.slik_v2_server.domain.dodam.repository.DodamRepository;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import com.spring.slik_v2_server.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +31,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +44,8 @@ public class AttendanceService {
 	private final AttendanceRepository attendanceRepository;
 	private final AttendanceSetRepository attendanceSetRepository;
 	private final FingerPrintRepository fingerPrintRepository;
+	private final StudentRepository studentRepository;
+	private final DodamRepository dodamRepository;
 	@Value("${spring.Dodam.API_KEY}")
 	private String DodamApiKey;
 
@@ -152,5 +165,117 @@ public class AttendanceService {
 				.map(StudentAttendanceResponse::of)
 				.collect(Collectors.toList());
 		return ApiResponse.ok(LiveAttendanceResponse.of(today, students));
+	}
+
+	public ApiResponse<?> getStudentInfo(String studentId) {
+		Student student = studentRepository.findByStudentId(studentId)
+				.orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
+
+		return ApiResponse.ok(GetStudentInfoResponse.of(student));
+	}
+
+	public ApiResponse<?> absences(String studentId, int year, int month) {
+		Student student = studentRepository.findByStudentId(studentId)
+				.orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
+
+		LocalDate startDate = LocalDate.of(year, month, 1);
+		LocalDate endDate = startDate.withDayOfMonth(startDate.getMonth().length(startDate.isLeapYear()));
+
+		List<AttendanceTime> attendanceTimes = attendanceRepository.findAllByStudentAndAttendanceStatusIsNoneAndTodayBetween(student, AttendanceStatus.NONE, startDate, endDate);
+		List<AbsencesResponse> responses = AbsencesResponse.formlist(attendanceTimes);
+		return ApiResponse.ok(responses);
+	}
+
+	public ApiResponse<?> calendar(int year, int month, String studentId) {
+		Student student = studentRepository.findByStudentId(studentId)
+				.orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
+
+		LocalDate startDate = LocalDate.of(year, month, 1);
+		LocalDate endDate = startDate.withDayOfMonth(startDate.getMonth().length(startDate.isLeapYear()));
+
+		List<AttendanceTime> attendanceTimes = attendanceRepository.findAllByStudentAndTodayBetween(
+				student, startDate, endDate
+		);
+
+		Map<LocalDate, AttendanceTime> dateMap = attendanceTimes.stream()
+				.collect(Collectors.toMap(AttendanceTime::getToday, a -> a));
+
+		Map<Integer, String> calendar = new HashMap<>();
+		for (int day = 1; day <= endDate.getDayOfMonth(); day++) {
+			LocalDate date = LocalDate.of(year, month, day);
+			AttendanceTime attendance = dateMap.get(date);
+			calendar.put(day, judgeAttendanceStatus(attendance));
+		}
+
+		return ApiResponse.ok(new CalendarResponse(calendar));
+	}
+
+	private String judgeAttendanceStatus(AttendanceTime attendance) {
+		if (attendance == null) {
+			return null;
+		}
+
+		Type type = attendance.getType();
+		LocalDate today = LocalDate.now();
+		boolean isToday = attendance.getToday().equals(today);
+
+		if (type == Type.NIGHT_STUDY_1) {
+			return judgeS1Status(attendance, isToday);
+		} else if (type == Type.NIGHT_STUDY_2) {
+			return judgeS1S2Status(attendance, isToday);
+		}
+
+		return null;
+	}
+
+	private String judgeS1Status(AttendanceTime attendance, boolean isToday) {
+		boolean hasInTime = attendance.getS1InTime() != null;
+		boolean hasOutTime = attendance.getS1OutTime() != null;
+		boolean isStudying = attendance.getS1Status() == AttendanceStatus.STUDYING;
+
+		if (isToday) {
+			if (hasOutTime && isStudying) {
+				return "present";
+			} else if (hasInTime && isStudying) {
+				return "progress";
+			} else {
+				return "absent";
+			}
+		} else {
+			if (hasOutTime && isStudying) {
+				return "present";
+			} else if (!hasInTime || !hasOutTime) {
+				return "absent";
+			} else {
+				return "progress";
+			}
+		}
+	}
+
+	private String judgeS1S2Status(AttendanceTime attendance, boolean isToday) {
+		boolean s1HasOutTime = attendance.getS1OutTime() != null;
+		boolean s2HasInTime = attendance.getS2InTime() != null;
+		boolean s2HasOutTime = attendance.getS2OutTime() != null;
+		boolean s2IsStudying = attendance.getS2Status() == AttendanceStatus.STUDYING;
+
+		if (isToday) {
+			if (s2HasOutTime && s2IsStudying) {
+				return "present";
+			} else if (s2HasInTime && s2IsStudying) {
+				return "progress";
+			} else if (s1HasOutTime) {
+				return "progress";
+			} else {
+				return "absent";
+			}
+		} else {
+			if (s2HasOutTime && s2IsStudying) {
+				return "present";
+			} else if (!s1HasOutTime) {
+				return "absent";
+			} else {
+				return "progress";
+			}
+		}
 	}
 }
