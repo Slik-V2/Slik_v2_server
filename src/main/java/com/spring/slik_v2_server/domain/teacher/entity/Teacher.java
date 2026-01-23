@@ -40,7 +40,7 @@ public class Teacher {
         this.password = password;
     }
 
-    public void setActive() {
-        isActive = true;
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 }

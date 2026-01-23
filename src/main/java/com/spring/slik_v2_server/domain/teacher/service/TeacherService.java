@@ -1,6 +1,7 @@
 package com.spring.slik_v2_server.domain.teacher.service;
 
 import  com.spring.slik_v2_server.domain.teacher.dto.request.ChangePasswordRequest;
+import com.spring.slik_v2_server.domain.teacher.dto.request.IsActiveRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignInRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignUpRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.response.GetTeacherResponse;
@@ -73,10 +74,10 @@ public class TeacherService {
         return ApiResponse.ok("비밀번호 변경 성공");
     }
 
-    public ApiResponse<Boolean> isActive(Long id) {
+    public ApiResponse<Boolean> isActive(Long id, IsActiveRequest request) {
         Teacher teacher = teacherRepository.findById(id)
                 .orElseThrow(() -> ApplicationException.of(TeacherStatusCode.TEACHER_NOT_FOUND));
-        teacher.setActive();
+        teacher.setActive(request.isActive());
         teacherRepository.save(teacher);
         return ApiResponse.ok(Boolean.TRUE);
     }
@@ -85,7 +86,6 @@ public class TeacherService {
         List<GetTeacherResponse> responses = teacherRepository.findAll().stream().map(
                 GetTeacherResponse::of
         ).collect(Collectors.toList());
-
         return ApiResponse.ok(responses);
     }
 }
