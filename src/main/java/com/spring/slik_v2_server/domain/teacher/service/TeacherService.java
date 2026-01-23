@@ -74,8 +74,8 @@ public class TeacherService {
         return ApiResponse.ok("비밀번호 변경 성공");
     }
 
-    public ApiResponse<Boolean> isActive(Long id, IsActiveRequest request) {
-        Teacher teacher = teacherRepository.findById(id)
+    public ApiResponse<Boolean> isActive(String id, IsActiveRequest request) {
+        Teacher teacher = teacherRepository.findByUsername(id)
                 .orElseThrow(() -> ApplicationException.of(TeacherStatusCode.TEACHER_NOT_FOUND));
         teacher.setActive(request.isActive());
         teacherRepository.save(teacher);

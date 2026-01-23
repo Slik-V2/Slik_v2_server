@@ -39,7 +39,7 @@ public class TeacherController {
     }
 
     @PatchMapping("/active/{id}")
-    public ApiResponse<Boolean> isActive(@PathVariable Long id, @RequestBody IsActiveRequest request) {
+    public ApiResponse<Boolean> isActive(@PathVariable String id, @RequestBody IsActiveRequest request) {
         return teacherService.isActive(id, request);
     }
 }
