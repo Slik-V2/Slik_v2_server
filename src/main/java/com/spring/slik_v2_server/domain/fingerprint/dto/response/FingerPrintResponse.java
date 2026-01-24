@@ -6,16 +6,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record FingerPrintResponse(
-		Long id,
 		String studentId,
-		String encrypted_template
+		String encryptedTemplate
 ) {
 
 	public static FingerPrintResponse of(FingerPrint fingerPrint) {
 		return new FingerPrintResponse(
-				fingerPrint.getId(),
 				fingerPrint.getStudentId(),
-				fingerPrint.getEncrypted_template());
+				fingerPrint.getEncryptedTemplate());
 	}
 
 	public static List<FingerPrintResponse> toList(List<FingerPrint> fingerPrint) {

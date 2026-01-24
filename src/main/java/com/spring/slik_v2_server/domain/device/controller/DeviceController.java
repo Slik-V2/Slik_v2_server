@@ -1,8 +1,7 @@
 package com.spring.slik_v2_server.domain.device.controller;
 
-import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
+import com.spring.slik_v2_server.domain.device.dto.response.OverrideLookupResponse;
 import com.spring.slik_v2_server.domain.device.service.AttendanceQueryService;
-import com.spring.slik_v2_server.domain.device.dto.request.FindAttendanceRequest;
 import com.spring.slik_v2_server.domain.device.dto.request.UpdateDeviceRequest;
 import com.spring.slik_v2_server.domain.device.dto.request.VerifyDeviceRequest;
 import com.spring.slik_v2_server.domain.device.service.DeviceService;
@@ -14,9 +13,8 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,10 +29,9 @@ public class DeviceController {
         return ApiResponse.ok("출석 인증 요청이 처리되었습니다.");
     }
 
-    @PostMapping("/lookup")
-    public ApiResponse<List<AttendanceTimeResponse>> lookup(@Valid @RequestBody FindAttendanceRequest request) {
-        return attendanceQueryService.findAttendanceStatus(request.studnet_id());
-
+    @GetMapping("/override/lookup")
+    public ApiResponse<OverrideLookupResponse> lookup(@RequestParam String studentId) {
+        return attendanceQueryService.findOverrideLookup(studentId);
     }
 
     @PatchMapping("/override/confirm")

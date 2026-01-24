@@ -15,7 +15,6 @@ import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeSet;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceRepository;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceSetRepository;
 import com.spring.slik_v2_server.domain.dodam.entity.Type;
-import com.spring.slik_v2_server.domain.dodam.repository.DodamRepository;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;
 import com.spring.slik_v2_server.domain.fingerprint.repository.FingerPrintRepository;
@@ -43,7 +42,6 @@ public class AttendanceService {
 	private final AttendanceSetRepository attendanceSetRepository;
 	private final FingerPrintRepository fingerPrintRepository;
 	private final StudentRepository studentRepository;
-	private final DodamRepository dodamRepository;
 	@Value("${spring.Dodam.API_KEY}")
 	private String DodamApiKey;
 
@@ -179,8 +177,8 @@ public class AttendanceService {
 		LocalDate startDate = LocalDate.of(year, month, 1);
 		LocalDate endDate = startDate.withDayOfMonth(startDate.getMonth().length(startDate.isLeapYear()));
 
-		List<AttendanceTime> attendanceTimes = attendanceRepository.findAllByStudentAndAttendanceStatusIsNoneAndTodayBetween(student, AttendanceStatus.NONE, startDate, endDate);
-		List<AbsencesResponse> responses = AbsencesResponse.formlist(attendanceTimes);
+		List<AttendanceTime> attendanceTimes = attendanceRepository.findAllByStudentAndTodayBetween(student, startDate, endDate);
+		List<AbsencesResponse> responses = AbsencesResponse.fromList(attendanceTimes);
 		return ApiResponse.ok(responses);
 	}
 

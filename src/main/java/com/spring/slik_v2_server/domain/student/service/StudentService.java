@@ -1,4 +1,4 @@
-package com.spring.slik_v2_server.domain.student.Service;
+package com.spring.slik_v2_server.domain.student.service;
 
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;

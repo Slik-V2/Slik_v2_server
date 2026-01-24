@@ -3,6 +3,8 @@ package com.spring.slik_v2_server.domain.device.service;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.LiveAttendanceResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.StudentAttendanceResponse;
+import com.spring.slik_v2_server.domain.device.dto.response.OverrideLookupResponse;
+import com.spring.slik_v2_server.domain.student.exception.StudentStatus;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceRepository;
@@ -48,6 +50,18 @@ public class AttendanceQueryService {
                 .collect(Collectors.toList());
 
         return ApiResponse.ok(LiveAttendanceResponse.of(date, attendanceResponses));
+    }
+
+    public ApiResponse<OverrideLookupResponse> findOverrideLookup(String studentId) {
+        LocalDate today = LocalDate.now();
+
+        Student student = studentRepository.findByStudentId(studentId)
+                .orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
+
+        AttendanceTime attendanceTime = attendanceRepository.findByStudentAndToday(student, today)
+                .orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
+
+        return ApiResponse.ok(OverrideLookupResponse.of(attendanceTime));
     }
 
     public void createDailyAttendanceRecords() {

@@ -36,7 +36,7 @@ public class FingerPrintService {
 
 		FingerPrint fingerPrint = FingerPrint.builder()
 				.studentId(request.studentId())
-				.encrypted_template(request.encrypted_template())
+				.encryptedTemplate(request.encryptedTemplate())
 				.build();
 
 		fingerPrintRepository.save(fingerPrint);

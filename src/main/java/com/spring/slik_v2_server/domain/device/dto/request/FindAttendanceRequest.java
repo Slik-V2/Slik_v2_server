@@ -4,6 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 
 public record FindAttendanceRequest(
         @NotBlank(message = "학번 입력을 해주세요.")
-        String studnet_id
+        String studentId
 ) {
 }

@@ -1,6 +1,5 @@
 package com.spring.slik_v2_server.domain.logs.controller;
 
-import com.spring.slik_v2_server.domain.logs.repository.LogsRepository;
 import com.spring.slik_v2_server.domain.logs.service.LogsService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import lombok.RequiredArgsConstructor;

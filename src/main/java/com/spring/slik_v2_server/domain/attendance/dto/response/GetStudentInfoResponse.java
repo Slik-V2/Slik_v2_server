@@ -3,7 +3,7 @@ package com.spring.slik_v2_server.domain.attendance.dto.response;
 import com.spring.slik_v2_server.domain.student.entity.Student;
 
 public record GetStudentInfoResponse(
-        String StudentId,
+        String studentId,
         String name,
         StatusResponse stats
 ) {

@@ -36,9 +36,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/users").hasRole("ADMIN")
-                        .requestMatchers("/users/register", "/users/manage", "/ws/**", "/night_study_list", "/attendanceTime", "/error",  "/admin/schedule/**").permitAll()
+                        .requestMatchers("/users/register", "/users/manage", "/night_study_list", "/attendanceTime", "/error", "/admin/config/schedule/**").permitAll()
                         .requestMatchers("/device/**").permitAll()
-                        .requestMatchers("/auth/login", "/auth/isActive/", "/auth/signup").permitAll()
+                        .requestMatchers("/auth/login", "/auth/active/**", "/auth/signup").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

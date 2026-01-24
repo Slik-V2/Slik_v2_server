@@ -9,9 +9,6 @@ import com.spring.slik_v2_server.domain.attendance.repository.AttendanceSetRepos
 import com.spring.slik_v2_server.domain.device.dto.request.UpdateDeviceRequest;
 import com.spring.slik_v2_server.domain.device.dto.request.VerifyDeviceRequest;
 import com.spring.slik_v2_server.domain.dodam.entity.Type;
-import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
-import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;
-import com.spring.slik_v2_server.domain.fingerprint.repository.FingerPrintRepository;
 import com.spring.slik_v2_server.domain.logs.entity.Logs;
 import com.spring.slik_v2_server.domain.logs.repository.LogsRepository;
 import com.spring.slik_v2_server.domain.student.entity.Student;
@@ -19,12 +16,11 @@ import com.spring.slik_v2_server.domain.student.exception.StudentStatus;
 import com.spring.slik_v2_server.domain.student.repository.StudentRepository;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import com.spring.slik_v2_server.global.exception.ApplicationException;
+import com.corundumstudio.socketio.SocketIOServer;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Map;
 
@@ -33,9 +29,8 @@ import java.util.Map;
 public class DeviceService {
     private final AttendanceRepository attendanceRepository;
     private final AttendanceSetRepository attendanceSetRepository;
-    private final FingerPrintRepository fingerPrintRepository;
     private final StudentRepository studentRepository;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final SocketIOServer socketIOServer;
     private final LogsRepository logsRepository;
 
     public void verifyAttendance(VerifyDeviceRequest request) {
@@ -55,7 +50,7 @@ public class DeviceService {
             java.util.Optional<AttendanceType> currentSessionTypeOpt = getTypeByTimeRange(now, timeSet);
 
             if (currentSessionTypeOpt.isEmpty()) {
-                messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                         "status", "FAILED",
                         "message", "출석 가능 시간이 아닙니다.",
                         "timestamp", LocalTime.now().toString()
@@ -72,7 +67,7 @@ public class DeviceService {
             AttendanceType currentSessionType = currentSessionTypeOpt.get();
 
             if (currentSessionType.name().contains("session2") && attendanceTime.getType() == Type.NIGHT_STUDY_1) {
-                messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                         "status", "FAILED",
                         "message", "심자1 대상은 심자2에 참여할 수 없습니다.",
                         "timestamp", LocalTime.now().toString()
@@ -130,7 +125,7 @@ public class DeviceService {
                             .success(false)
                             .student(student)
                             .build());
-                    messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                    socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S1 출석은 이미 완료되었습니다.",
                             "timestamp", LocalTime.now().toString()
@@ -144,7 +139,7 @@ public class DeviceService {
                             .success(false)
                             .student(student)
                             .build());
-                    messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                    socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S1In이 null - 퇴실 불가",
                             "timestamp", LocalTime.now().toString()
@@ -158,7 +153,7 @@ public class DeviceService {
                             .success(false)
                             .student(student)
                             .build());
-                    messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                    socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S1 퇴실은 이미 완료되었습니다.",
                             "timestamp", LocalTime.now().toString()
@@ -172,7 +167,7 @@ public class DeviceService {
                             .success(false)
                             .student(student)
                             .build());
-                    messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                    socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S1을 끝내지 못했습니다.",
                             "timestamp", LocalTime.now().toString()
@@ -186,7 +181,7 @@ public class DeviceService {
                             .success(false)
                             .student(student)
                             .build());
-                    messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                    socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S2 출석은 이미 완료되었습니다.",
                             "timestamp", LocalTime.now().toString()
@@ -200,7 +195,7 @@ public class DeviceService {
                             .success(false)
                             .student(student)
                             .build());
-                    messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                    socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S2In이 null - 퇴실 불가",
                             "timestamp", LocalTime.now().toString()
@@ -214,7 +209,7 @@ public class DeviceService {
                             .success(false)
                             .student(student)
                             .build());
-                    messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                    socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S2 퇴실은 이미 완료되었습니다.",
                             "timestamp", LocalTime.now().toString()
@@ -228,7 +223,7 @@ public class DeviceService {
                             .success(false)
                             .student(student)
                             .build());
-                    messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+                    socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "유효하지 않은 출석 요청입니다.",
                             "timestamp", LocalTime.now().toString()
@@ -245,7 +240,7 @@ public class DeviceService {
             attendanceRepository.save(attendanceTime);
             studentRepository.save(student);
 
-            messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+            socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                     "status", "SUCCESS",
                     "name", student.getName(),
                     "timestamp", LocalTime.now().toString()
@@ -258,7 +253,7 @@ public class DeviceService {
                     .success(false)
                     .student(student)
                     .build());
-            messagingTemplate.convertAndSend("/topic/device/" + request.device_id(), (Object) Map.of(
+            socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                     "status", "FAILED",
                     "message", e.getMessage(),
                     "timestamp", LocalTime.now().toString()
@@ -321,7 +316,7 @@ public class DeviceService {
 
         attendanceRepository.save(attendanceTime);
 
-        messagingTemplate.convertAndSend("/topic/attendance/update", (Object) Map.of(
+        socketIOServer.getBroadcastOperations().sendEvent("attendanceUpdate", Map.of(
                 "studentId", request.studentId(),
                 "session", request.targetSession(),
                 "status", request.newStatus(),

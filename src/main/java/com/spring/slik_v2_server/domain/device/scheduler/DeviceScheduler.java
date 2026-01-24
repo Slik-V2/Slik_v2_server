@@ -1,7 +1,6 @@
 package com.spring.slik_v2_server.domain.device.scheduler;
 
 import com.spring.slik_v2_server.domain.device.service.AttendanceQueryService;
-import com.spring.slik_v2_server.domain.device.service.DeviceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

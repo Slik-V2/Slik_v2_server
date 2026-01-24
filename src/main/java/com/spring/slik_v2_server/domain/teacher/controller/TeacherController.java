@@ -9,7 +9,6 @@ import com.spring.slik_v2_server.domain.teacher.dto.response.LoginResponse;
 import com.spring.slik_v2_server.domain.teacher.service.TeacherService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +43,7 @@ public class TeacherController {
         return teacherService.isActive(id, request);
     }
 
-    @PutMapping("/users/role/{userId}")
+    @PatchMapping("/users/role/{userId}")
     public ApiResponse<?> isRole(@Valid @RequestBody ChangeRoleRequest request, @PathVariable String userId) {
         return teacherService.isRole(request,userId);
     }
