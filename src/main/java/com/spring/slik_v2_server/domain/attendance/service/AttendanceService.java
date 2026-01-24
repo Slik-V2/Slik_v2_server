@@ -1,5 +1,14 @@
 package com.spring.slik_v2_server.domain.attendance.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.spring.slik_v2_server.domain.attendance.dto.request.AttendanceTimeSetRequest;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AbsencesResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
@@ -23,16 +32,8 @@ import com.spring.slik_v2_server.domain.student.exception.StudentStatus;
 import com.spring.slik_v2_server.domain.student.repository.StudentRepository;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import com.spring.slik_v2_server.global.exception.ApplicationException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
