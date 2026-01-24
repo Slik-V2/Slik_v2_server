@@ -42,8 +42,6 @@ public class AttendanceService {
 	private final AttendanceSetRepository attendanceSetRepository;
 	private final FingerPrintRepository fingerPrintRepository;
 	private final StudentRepository studentRepository;
-	@Value("${spring.Dodam.API_KEY}")
-	private String DodamApiKey;
 
 	// 심자 출석체크 가능 시간 조회
 	public ApiResponse<AttendanceTimeSetResponse> getSchedule(LocalDate date) {
