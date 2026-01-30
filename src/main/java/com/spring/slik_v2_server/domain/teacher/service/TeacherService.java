@@ -94,7 +94,7 @@ public class TeacherService {
         Teacher teacher = teacherRepository.findByUsername(userId)
                 .orElseThrow(() -> new ApplicationException(TeacherStatusCode.TEACHER_NOT_FOUND));
 
-        switch (request.role()) {
+        switch (request.role().toLowerCase()) {
             case "teacher" -> teacher.setRole(Role.TEACHER);
             case "admin" -> teacher.setRole(Role.ADMIN);
         }
