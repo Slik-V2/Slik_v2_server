@@ -80,12 +80,16 @@ public class AttendanceQueryService {
                         studentRepository.save(student);
                     }
 
+                    AttendanceStatus s2Status = dodam.getType().name().equals("NIGHT_STUDY_1")
+                            ? AttendanceStatus.NONE
+                            : AttendanceStatus.ABSENT;
+
                     return AttendanceTime.builder()
                             .today(today)
                             .fingerPrint(fingerPrint)
                             .type(dodam.getType())
-                            .s1Status(AttendanceStatus.NONE)
-                            .s2Status(AttendanceStatus.NONE)
+                            .s1Status(AttendanceStatus.ABSENT)
+                            .s2Status(s2Status)
                             .student(student)
                             .build();
                 })

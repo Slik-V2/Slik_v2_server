@@ -1,4 +1,4 @@
-package com.spring.slik_v2_server.config;
+package com.spring.slik_v2_server.global.config;
 
 import com.spring.slik_v2_server.domain.teacher.entity.Role;
 import com.spring.slik_v2_server.domain.teacher.entity.Teacher;
