@@ -40,11 +40,16 @@ public class AttendanceTime {
 
 	@Enumerated(EnumType.STRING)
 	private AttendanceStatus s1Status; //심1 상태
+
 	private LocalTime s1InTime; //심1 출석 시간
+
 	private LocalTime s1OutTime; // 심1 퇴실 시간
+
 	@Enumerated(EnumType.STRING)
 	private AttendanceStatus s2Status; //심2 상태
+
 	private LocalTime s2InTime; // 심2 출석 시간
+
 	private LocalTime s2OutTime; // 심2 퇴실한 시
 
 	@OneToOne
