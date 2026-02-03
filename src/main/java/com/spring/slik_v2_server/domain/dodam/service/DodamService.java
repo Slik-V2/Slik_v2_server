@@ -53,6 +53,8 @@ public class DodamService {
 							.type(item.type())
 							.startAt(item.startAt())
 							.endAt(item.endAt())
+							.doNeedPhone(item.doNeedPhone())
+							.reasonForPhone(item.reasonForPhone())
 							.build();
 				}).collect(Collectors.toList());
 

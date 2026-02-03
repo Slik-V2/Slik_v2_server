@@ -2,7 +2,10 @@ package com.spring.slik_v2_server.domain.dodam.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
+import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.spring.slik_v2_server.domain.dodam.entity.Dodam;
@@ -14,4 +17,6 @@ public interface DodamRepository extends JpaRepository<Dodam, Long> {
 	// endAt이 오늘(today)보다 이전인경우 삭제
 	void deleteByEndAtBefore(LocalDate today);
 	List<Dodam> findAllByStartAtLessThanEqualAndEndAtGreaterThanEqual(LocalDate startAt, LocalDate endAt);
+
+	Optional<Dodam> findByStudentId(long studentId);
 }

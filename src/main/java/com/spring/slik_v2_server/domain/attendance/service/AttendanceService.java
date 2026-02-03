@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.spring.slik_v2_server.domain.dodam.repository.DodamRepository;
 import org.springframework.stereotype.Service;
 
 import com.spring.slik_v2_server.domain.attendance.dto.request.AttendanceTimeSetRequest;
@@ -43,6 +44,7 @@ public class AttendanceService {
 	private final AttendanceSetRepository attendanceSetRepository;
 	private final FingerPrintRepository fingerPrintRepository;
 	private final StudentRepository studentRepository;
+	private final DodamRepository dodamRepository;
 
 	// 심자 출석체크 가능 시간 조회
 	public ApiResponse<AttendanceTimeSetResponse> getSchedule(LocalDate date) {
@@ -157,8 +159,13 @@ public class AttendanceService {
 	public ApiResponse<LiveAttendanceResponse> getliveAttendanceStatus(LocalDate today) {
 		List<AttendanceTime> attendanceTimes = attendanceRepository.findAllByToday(today);
 		List<StudentAttendanceResponse> students = attendanceTimes.stream()
-				.map(StudentAttendanceResponse::of)
+				.flatMap(attendanceTime ->
+					dodamRepository.findByStudentId(Long.parseLong(attendanceTime.getStudent().getStudentId()))
+						.stream()
+						.map(dodam -> StudentAttendanceResponse.of(attendanceTime, dodam))
+				)
 				.collect(Collectors.toList());
+
 		return ApiResponse.ok(LiveAttendanceResponse.of(today, students));
 	}
 

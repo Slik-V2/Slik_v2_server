@@ -21,7 +21,10 @@ public record NightStudyResponse (
 			Type type,
 
 			LocalDate startAt,
-			LocalDate endAt
+			LocalDate endAt,
+
+			boolean doNeedPhone,
+			String reasonForPhone
 	) {
 	}
 

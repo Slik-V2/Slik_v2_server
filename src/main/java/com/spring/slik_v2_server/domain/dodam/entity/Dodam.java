@@ -24,4 +24,7 @@ public class Dodam {
 
 	private LocalDate startAt;
 	private LocalDate endAt;
+
+	private boolean doNeedPhone;
+	private String reasonForPhone;
 }
