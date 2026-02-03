@@ -177,8 +177,7 @@ public class AttendanceService {
 		LocalDate endDate = startDate.withDayOfMonth(startDate.getMonth().length(startDate.isLeapYear()));
 
 		List<AttendanceTime> attendanceTimes = attendanceRepository.findAllByStudentAndTodayBetween(student, startDate, endDate);
-		List<AbsencesResponse> responses = AbsencesResponse.fromList(attendanceTimes);
-		return ApiResponse.ok(responses);
+		return ApiResponse.ok(AbsencesResponse.fromList(attendanceTimes));
 	}
 
 	public ApiResponse<CalendarResponse> calendar(int year, int month, String studentId) {
