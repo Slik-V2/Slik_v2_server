@@ -14,7 +14,7 @@ import java.util.List;
 public class LogsService {
     private final LogsRepository logsRepository;
 
-    public ApiResponse<?> getLog(String studentId) {
+    public ApiResponse<List<GetLogsResponse>> getLog(String studentId) {
         List<Logs> logs = logsRepository.findAllByStudent_StudentId(studentId);
 
         List<GetLogsResponse> responses = GetLogsResponse.fromList(logs);

@@ -60,7 +60,7 @@ public class TeacherService {
         return ApiResponse.ok(LoginResponse.of(accessToken, ACCESS_TOKEN_VALIDITY, teacher));
     }
 
-    public ApiResponse<?> changePassword(ChangePasswordRequest request) {
+    public ApiResponse<String> changePassword(ChangePasswordRequest request) {
         Teacher teacher = getTeacher();
 
         if (bCryptPasswordEncoder.matches(request.newPassword(), teacher.getPassword())) {
@@ -90,7 +90,7 @@ public class TeacherService {
         return ApiResponse.ok(responses);
     }
 
-    public ApiResponse<?> isRole(ChangeRoleRequest request, String userId) {
+    public ApiResponse<String> isRole(ChangeRoleRequest request, String userId) {
         Teacher teacher = teacherRepository.findByUsername(userId)
                 .orElseThrow(() -> new ApplicationException(TeacherStatusCode.TEACHER_NOT_FOUND));
 

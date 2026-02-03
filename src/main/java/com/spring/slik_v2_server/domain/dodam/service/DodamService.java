@@ -22,7 +22,8 @@ public class DodamService {
 	private final DodamRepository dodamRepository;
 	private final WebClient webClient;
 
-	public List<Dodam>  saveStudent() {
+	@Transactional
+	public List<Dodam> saveStudent() {
 		NightStudyResponse response;
 		try {
 			response = webClient.get()
