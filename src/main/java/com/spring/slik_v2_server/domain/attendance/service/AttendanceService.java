@@ -51,7 +51,7 @@ public class AttendanceService {
 		AttendanceTimeSet setTime = attendanceSetRepository.findByToday(date).orElseGet(()
 				-> {
 			AttendanceTimeSet newTimeSet = AttendanceTimeSet.builder()
-					.today(LocalDate.now())
+₩					.today(date)
 					.session1_1Start(AttendanceTimeEnum.session1_1Start.getDefaultTime())
 					.session1_1End(AttendanceTimeEnum.session1_1End.getDefaultTime())
 					.session1_2Start(AttendanceTimeEnum.session1_2Start.getDefaultTime())
