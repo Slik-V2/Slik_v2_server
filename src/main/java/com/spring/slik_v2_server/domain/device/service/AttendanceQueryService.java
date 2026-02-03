@@ -44,14 +44,6 @@ public class AttendanceQueryService {
         return ApiResponse.ok(attendanceStatus);
     }
 
-    public ApiResponse<LiveAttendanceResponse> getLiveAttendance(LocalDate date) {
-        List<StudentAttendanceResponse> attendanceResponses = attendanceRepository.findAllByToday(date).stream()
-                .map(StudentAttendanceResponse::of)
-                .collect(Collectors.toList());
-
-        return ApiResponse.ok(LiveAttendanceResponse.of(date, attendanceResponses));
-    }
-
     public ApiResponse<OverrideLookupResponse> findOverrideLookup(String studentId) {
         LocalDate today = LocalDate.now();
 
