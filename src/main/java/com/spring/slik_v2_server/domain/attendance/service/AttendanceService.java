@@ -154,7 +154,7 @@ public class AttendanceService {
 		return inputTime != null ? inputTime : time.getDefaultTime();
 	}
 
-	public ApiResponse<?> getliveAttendanceStatus(LocalDate today) {
+	public ApiResponse<LiveAttendanceResponse> getliveAttendanceStatus(LocalDate today) {
 		List<AttendanceTime> attendanceTimes = attendanceRepository.findAllByToday(today);
 		List<StudentAttendanceResponse> students = attendanceTimes.stream()
 				.map(StudentAttendanceResponse::of)
@@ -162,14 +162,14 @@ public class AttendanceService {
 		return ApiResponse.ok(LiveAttendanceResponse.of(today, students));
 	}
 
-	public ApiResponse<?> getStudentInfo(String studentId) {
+	public ApiResponse<GetStudentInfoResponse> getStudentInfo(String studentId) {
 		Student student = studentRepository.findByStudentId(studentId)
 				.orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
 
 		return ApiResponse.ok(GetStudentInfoResponse.of(student));
 	}
 
-	public ApiResponse<?> absences(String studentId, int year, int month) {
+	public ApiResponse<List<AbsencesResponse>> absences(String studentId, int year, int month) {
 		Student student = studentRepository.findByStudentId(studentId)
 				.orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
 
@@ -177,11 +177,10 @@ public class AttendanceService {
 		LocalDate endDate = startDate.withDayOfMonth(startDate.getMonth().length(startDate.isLeapYear()));
 
 		List<AttendanceTime> attendanceTimes = attendanceRepository.findAllByStudentAndTodayBetween(student, startDate, endDate);
-		List<AbsencesResponse> responses = AbsencesResponse.fromList(attendanceTimes);
-		return ApiResponse.ok(responses);
+		return ApiResponse.ok(AbsencesResponse.fromList(attendanceTimes));
 	}
 
-	public ApiResponse<?> calendar(int year, int month, String studentId) {
+	public ApiResponse<CalendarResponse> calendar(int year, int month, String studentId) {
 		Student student = studentRepository.findByStudentId(studentId)
 				.orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
 
@@ -206,7 +205,6 @@ public class AttendanceService {
 	}
 
 	private String judgeAttendanceStatus(AttendanceTime attendance) {
-		// 데이터가 없으면 null
 		if (attendance == null) {
 			return null;
 		}

@@ -1,7 +1,11 @@
 package com.spring.slik_v2_server.domain.attendance.controller;
 
 import com.spring.slik_v2_server.domain.attendance.dto.request.AttendanceTimeSetRequest;
+import com.spring.slik_v2_server.domain.attendance.dto.response.AbsencesResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeSetResponse;
+import com.spring.slik_v2_server.domain.attendance.dto.response.CalendarResponse;
+import com.spring.slik_v2_server.domain.attendance.dto.response.GetStudentInfoResponse;
+import com.spring.slik_v2_server.domain.attendance.dto.response.LiveAttendanceResponse;
 import com.spring.slik_v2_server.domain.attendance.service.AttendanceService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
@@ -32,21 +37,21 @@ public class AttendanceController {
 	}
 
 	@GetMapping("/attendance/live")
-	public ApiResponse<?> getLiveAttendanceStatus(
+	public ApiResponse<LiveAttendanceResponse> getLiveAttendanceStatus(
 			@RequestParam LocalDate date
 			) {
 		return attendanceService.getliveAttendanceStatus(date);
 	}
 
 	@GetMapping("/students/{studentId}")
-	public ApiResponse<?> getStudentInfo(
+	public ApiResponse<GetStudentInfoResponse> getStudentInfo(
 			@PathVariable String studentId
 	) {
 		return attendanceService.getStudentInfo(studentId);
 	}
 
 	@GetMapping("/students/{studentId}/absences")
-	public ApiResponse<?> absences(
+	public ApiResponse<List<AbsencesResponse>> absences(
 			@PathVariable String studentId,
 			@RequestParam int year,
 			@RequestParam int month) {
@@ -54,7 +59,7 @@ public class AttendanceController {
 	}
 
 	@GetMapping("/students/{studentId}/attendance")
-	public ApiResponse<?> calendar(
+	public ApiResponse<CalendarResponse> calendar(
 			@PathVariable String studentId,
 			@RequestParam int year,
 			@RequestParam int month) {

@@ -5,12 +5,15 @@ import com.spring.slik_v2_server.domain.teacher.dto.request.ChangeRoleRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.IsActiveRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignInRequest;
 import com.spring.slik_v2_server.domain.teacher.dto.request.SignUpRequest;
+import com.spring.slik_v2_server.domain.teacher.dto.response.GetTeacherResponse;
 import com.spring.slik_v2_server.domain.teacher.dto.response.LoginResponse;
 import com.spring.slik_v2_server.domain.teacher.service.TeacherService;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -29,12 +32,12 @@ public class TeacherController {
     }
 
     @PutMapping("/password")
-    public ApiResponse<?> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+    public ApiResponse<String> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         return teacherService.changePassword(request);
     }
 
     @GetMapping("/users")
-    public ApiResponse<?> getTeachers() {
+    public ApiResponse<List<GetTeacherResponse>> getTeachers() {
         return teacherService.getTeachers();
     }
 
@@ -44,7 +47,7 @@ public class TeacherController {
     }
 
     @PatchMapping("/users/role/{userId}")
-    public ApiResponse<?> isRole(@Valid @RequestBody ChangeRoleRequest request, @PathVariable String userId) {
+    public ApiResponse<String> isRole(@Valid @RequestBody ChangeRoleRequest request, @PathVariable String userId) {
         return teacherService.isRole(request,userId);
     }
 }
