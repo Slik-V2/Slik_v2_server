@@ -3,6 +3,8 @@ package com.spring.slik_v2_server.domain.device.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -59,7 +61,14 @@ public class AttendanceQueryService {
         LocalDate today = LocalDate.now();
         List<Dodam> activeDodams = dodamRepository.findAllByStartAtLessThanEqualAndEndAtGreaterThanEqual(today, today);
 
+        Set<String> existingStudentIds = attendanceRepository.findAllByToday(today)
+                .stream()
+                .map(att -> att.getStudent().getStudentId())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
         List<AttendanceTime> newAttendances = activeDodams.stream()
+                .filter(dodam -> !existingStudentIds.contains(String.valueOf(dodam.getStudentId())))
                 .map(dodam -> {
                     FingerPrint fingerPrint = fingerPrintRepository.findByStudentId(String.valueOf(dodam.getStudentId()))
                             .orElse(null);

@@ -9,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,7 +53,7 @@ public class AttendanceTime {
 
 	private LocalTime s2OutTime; // 심2 퇴실한 시
 
-	@OneToOne
+	@ManyToOne
 	private Student student; //학생정보
 
 	public void setEndTime(LocalTime s1OutTime) {
