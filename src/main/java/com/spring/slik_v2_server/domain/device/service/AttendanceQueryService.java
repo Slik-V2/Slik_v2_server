@@ -1,29 +1,28 @@
 package com.spring.slik_v2_server.domain.device.service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.stereotype.Service;
+
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
-import com.spring.slik_v2_server.domain.attendance.dto.response.LiveAttendanceResponse;
-import com.spring.slik_v2_server.domain.attendance.dto.response.StudentAttendanceResponse;
-import com.spring.slik_v2_server.domain.device.dto.response.OverrideLookupResponse;
-import com.spring.slik_v2_server.domain.student.exception.StudentStatus;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceStatus;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceRepository;
+import com.spring.slik_v2_server.domain.device.dto.response.OverrideLookupResponse;
 import com.spring.slik_v2_server.domain.dodam.entity.Dodam;
 import com.spring.slik_v2_server.domain.dodam.repository.DodamRepository;
 import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
 import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;
 import com.spring.slik_v2_server.domain.fingerprint.repository.FingerPrintRepository;
 import com.spring.slik_v2_server.domain.student.entity.Student;
+import com.spring.slik_v2_server.domain.student.exception.StudentStatus;
 import com.spring.slik_v2_server.domain.student.repository.StudentRepository;
 import com.spring.slik_v2_server.global.data.ApiResponse;
 import com.spring.slik_v2_server.global.exception.ApplicationException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

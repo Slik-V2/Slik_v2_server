@@ -3,9 +3,7 @@ package com.spring.slik_v2_server.domain.dodam.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
-import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.spring.slik_v2_server.domain.dodam.entity.Dodam;
