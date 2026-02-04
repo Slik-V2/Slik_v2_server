@@ -91,6 +91,11 @@ public class TeacherService {
     }
 
     public ApiResponse<String> isRole(ChangeRoleRequest request, String userId) {
+
+        if(userId.equals("admin")) {
+            throw new ApplicationException(TeacherStatusCode.ADMIN_ACCOUNT_CANNOT_BE_MODIFIED);
+        }
+
         Teacher teacher = teacherRepository.findByUsername(userId)
                 .orElseThrow(() -> new ApplicationException(TeacherStatusCode.TEACHER_NOT_FOUND));
 
