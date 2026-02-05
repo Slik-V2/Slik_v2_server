@@ -3,7 +3,7 @@ package com.spring.slik_v2_server.domain.device.service;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTime;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeSet;
 import com.spring.slik_v2_server.domain.attendance.entity.AttendanceType;
-import com.spring.slik_v2_server.domain.attendance.exception.AttendanceStatus;
+import com.spring.slik_v2_server.domain.attendance.exception.AttendanceTimeStatus;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceRepository;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceSetRepository;
 import com.spring.slik_v2_server.domain.device.dto.request.UpdateDeviceRequest;
@@ -42,10 +42,10 @@ public class DeviceService {
                     .orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
 
             AttendanceTimeSet timeSet = attendanceSetRepository.findByToday(today)
-                    .orElseThrow(() -> new ApplicationException(AttendanceStatus.NOT_IN_ATTENDANCE_TIME));
+                    .orElseThrow(() -> new ApplicationException(AttendanceTimeStatus.NOT_IN_ATTENDANCE_TIME));
 
             AttendanceTime attendanceTime = attendanceRepository.findByStudentAndToday(student, today)
-                    .orElseThrow(() -> new ApplicationException(AttendanceStatus.NOT_IN_ATTENDANCE_TIME));
+                    .orElseThrow(() -> new ApplicationException(AttendanceTimeStatus.NOT_IN_ATTENDANCE_TIME));
 
             java.util.Optional<AttendanceType> currentSessionTypeOpt = getTypeByTimeRange(now, timeSet);
 
@@ -288,7 +288,7 @@ public class DeviceService {
                 .orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
 
         AttendanceTime attendanceTime = attendanceRepository.findByStudentAndToday(student, today)
-                .orElseThrow(() -> new ApplicationException(AttendanceStatus.NOT_IN_ATTENDANCE_TIME));
+                .orElseThrow(() -> new ApplicationException(AttendanceTimeStatus.NOT_IN_ATTENDANCE_TIME));
 
         String session = request.targetSession().toUpperCase();
 
@@ -311,7 +311,7 @@ public class DeviceService {
                         .student(attendanceTime.getStudent())
                         .build());
             }
-            default -> throw new ApplicationException(AttendanceStatus.NOT_IN_ATTENDANCE_TIME);
+            default -> throw new ApplicationException(AttendanceTimeStatus.NOT_IN_ATTENDANCE_TIME);
         }
 
         attendanceRepository.save(attendanceTime);
