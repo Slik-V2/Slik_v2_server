@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.spring.slik_v2_server.domain.attendance.exception.AttendanceTimeStatus;
 import com.spring.slik_v2_server.domain.dodam.repository.DodamRepository;
 import org.springframework.stereotype.Service;
 
 import com.spring.slik_v2_server.domain.attendance.dto.request.AttendanceTimeSetRequest;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AbsencesResponse;
-import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.AttendanceTimeSetResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.CalendarResponse;
 import com.spring.slik_v2_server.domain.attendance.dto.response.GetStudentInfoResponse;
@@ -25,9 +25,6 @@ import com.spring.slik_v2_server.domain.attendance.entity.AttendanceTimeSet;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceRepository;
 import com.spring.slik_v2_server.domain.attendance.repository.AttendanceSetRepository;
 import com.spring.slik_v2_server.domain.dodam.entity.Type;
-import com.spring.slik_v2_server.domain.fingerprint.entity.FingerPrint;
-import com.spring.slik_v2_server.domain.fingerprint.exception.FingerPrintStatusCode;
-import com.spring.slik_v2_server.domain.fingerprint.repository.FingerPrintRepository;
 import com.spring.slik_v2_server.domain.student.entity.Student;
 import com.spring.slik_v2_server.domain.student.exception.StudentStatus;
 import com.spring.slik_v2_server.domain.student.repository.StudentRepository;
@@ -42,7 +39,6 @@ public class AttendanceService {
 
 	private final AttendanceRepository attendanceRepository;
 	private final AttendanceSetRepository attendanceSetRepository;
-	private final FingerPrintRepository fingerPrintRepository;
 	private final StudentRepository studentRepository;
 	private final DodamRepository dodamRepository;
 
@@ -80,6 +76,7 @@ public class AttendanceService {
 				request.session1_1End(),
 				AttendanceTimeEnum.session1_1End
 		);
+		isValidTime(session1_1Start, session1_1End);
 
 		// 심자1 복귀체크 가능 범위
 		LocalTime session1_2Start = setDefault(
@@ -89,6 +86,7 @@ public class AttendanceService {
 		LocalTime session1_2End = setDefault(
 				request.session1_2End(),
 				AttendanceTimeEnum.session1_2End);
+		isValidTime(session1_2Start, session1_2End);
 
 		// 심자2 출석체크 가능 범위
 		LocalTime session2_1Start = setDefault(
@@ -99,6 +97,7 @@ public class AttendanceService {
 				request.session2_1End(),
 				AttendanceTimeEnum.session2_1End
 		);
+		isValidTime(session2_1Start, session2_1End);
 
 		// 심자2 복귀체크 가능 범위
 		LocalTime session2_2Start = setDefault(
@@ -109,6 +108,7 @@ public class AttendanceService {
 				request.session2_2End(),
 				AttendanceTimeEnum.session2_2End
 		);
+		isValidTime(session2_2Start, session2_2End);
 
 
 		AttendanceTimeSet attendanceTimeSet = attendanceSetRepository.findByToday(date).map(exist -> {
@@ -139,17 +139,6 @@ public class AttendanceService {
 
 		attendanceSetRepository.save(attendanceTimeSet);
 		return ApiResponse.ok(AttendanceTimeSetResponse.of(attendanceTimeSet));
-	}
-
-	public ApiResponse<List<AttendanceTimeResponse>> findAttendanceStatus(String id) {
-		LocalDate today = LocalDate.now();
-
-		FingerPrint fingerPrint = fingerPrintRepository.findByStudentId(id)
-				.orElseThrow(() -> new ApplicationException(FingerPrintStatusCode.STUDENT_NOT_FOUND));
-
-		List<AttendanceTime> attendanceTimes = attendanceRepository.findAllByFingerPrintAndTodayBetween(fingerPrint, today, today);
-		List<AttendanceTimeResponse> attendanceStatus = AttendanceTimeResponse.fromList(attendanceTimes);
-		return ApiResponse.ok(attendanceStatus);
 	}
 
 	private LocalTime setDefault(LocalTime inputTime, AttendanceTimeEnum time) {
@@ -243,4 +232,11 @@ public class AttendanceService {
 		return null;
 	}
 
+	public void isValidTime(LocalTime startTime, LocalTime endTime) {
+		if (startTime.isAfter(endTime)) {
+			throw new ApplicationException(AttendanceTimeStatus.TIME_OUT_OF_RANGE);
+		} if (startTime.equals(endTime)) {
+			throw new ApplicationException(AttendanceTimeStatus.TIME_OUT_OF_RANGE_SAME);
+		}
+	}
 }
