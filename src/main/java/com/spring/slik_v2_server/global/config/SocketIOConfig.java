@@ -9,9 +9,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SocketIOConfig {
 
-    @Value("${socketio.server.hostname:0.0.0.0}")
+    @Value("${socketio.server.hostname}")
     private String hostname;
-    @Value("${socketio.server.port:443}")
+    @Value("${socketio.server.port}")
     private int port;
 
     @Bean
