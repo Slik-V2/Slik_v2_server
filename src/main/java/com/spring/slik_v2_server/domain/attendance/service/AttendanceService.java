@@ -233,8 +233,10 @@ public class AttendanceService {
 	}
 
 	public void isValidTime(LocalTime startTime, LocalTime endTime) {
-		if (startTime.isAfter(endTime) || startTime.equals(endTime)) {
+		if (startTime.isAfter(endTime)) {
 			throw new ApplicationException(AttendanceTimeStatus.TIME_OUT_OF_RANGE);
+		} if (startTime.equals(endTime)) {
+			throw new ApplicationException(AttendanceTimeStatus.TIME_OUT_OF_RANGE_SAME);
 		}
 	}
 }
