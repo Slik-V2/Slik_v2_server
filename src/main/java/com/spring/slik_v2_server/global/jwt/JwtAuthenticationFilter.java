@@ -37,7 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 path.equals("/") ||
                 path.endsWith(".html") ||
                 path.startsWith("/oauth2/") ||
-                path.startsWith("/ws/"); // WebSocket 경로 제외
+                path.startsWith("/ws/") ||
+                path.startsWith("/socket.io");
     }
 
     @Override
