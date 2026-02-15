@@ -32,3 +32,8 @@ spring:
 
   Dodam:
     API_KEY: ${API-KEY}
+  
+socketio:
+  server:
+    hostname: ${SOCKET_HOSTNAME}
+    port: ${SOCKET_PORT}
