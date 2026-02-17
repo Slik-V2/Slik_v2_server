@@ -23,7 +23,7 @@ dependencies {
     // spring security
      implementation 'org.springframework.boot:spring-boot-starter-security'
      implementation 'org.springframework.security:spring-security-crypto'
-     testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
+     testImplementation 'org.springframework.security:spring-security-test'
 
     // socket.io
     implementation 'com.corundumstudio.socketio:netty-socketio:2.0.12'
@@ -57,8 +57,6 @@ dependencies {
 
     // spring boot test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 
     //java-string-similarity
     implementation 'info.debatty:java-string-similarity:2.0.0'
