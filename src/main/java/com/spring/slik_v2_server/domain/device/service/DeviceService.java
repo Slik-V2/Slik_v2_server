@@ -9,8 +9,7 @@ import com.spring.slik_v2_server.domain.attendance.repository.AttendanceSetRepos
 import com.spring.slik_v2_server.domain.device.dto.request.UpdateDeviceRequest;
 import com.spring.slik_v2_server.domain.device.dto.request.VerifyDeviceRequest;
 import com.spring.slik_v2_server.domain.dodam.entity.Type;
-import com.spring.slik_v2_server.domain.logs.entity.Logs;
-import com.spring.slik_v2_server.domain.logs.repository.LogsRepository;
+import com.spring.slik_v2_server.domain.logs.service.LogsService;
 import com.spring.slik_v2_server.domain.student.entity.Student;
 import com.spring.slik_v2_server.domain.student.exception.StudentStatus;
 import com.spring.slik_v2_server.domain.student.repository.StudentRepository;
@@ -31,12 +30,11 @@ public class DeviceService {
     private final AttendanceSetRepository attendanceSetRepository;
     private final StudentRepository studentRepository;
     private final SocketIOServer socketIOServer;
-    private final LogsRepository logsRepository;
+    private final LogsService logsService;
 
     public void verifyAttendance(VerifyDeviceRequest request) {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
-
         try {
             Student student = studentRepository.findByStudentId(request.id())
                     .orElseThrow(() -> new ApplicationException(StudentStatus.STUDENT_NOT_FOUND));
@@ -55,12 +53,7 @@ public class DeviceService {
                         "message", "출석 가능 시간이 아닙니다.",
                         "timestamp", LocalTime.now().toString()
                 ));
-                logsRepository.save(Logs.builder()
-                        .action("Attendance is not available at this time.")
-                        .message("출석 가능 시간이 아닙니다.")
-                        .success(false)
-                        .student(student)
-                        .build());
+                logsService.saveLog("Attendance is not available at this time.", "출석 가능 시간이 아닙니다.", false, student);
                 return;
             }
 
@@ -72,12 +65,7 @@ public class DeviceService {
                         "message", "심자1 대상은 심자2에 참여할 수 없습니다.",
                         "timestamp", LocalTime.now().toString()
                 ));
-                logsRepository.save(Logs.builder()
-                        .action("Level 1 participants cannot join Level 2.")
-                        .message("심자1 대상은 심자2에 참여할 수 없습니다.")
-                        .success(false)
-                        .student(student)
-                        .build());
+                logsService.saveLog("Level 1 participants cannot join Level 2.", "심자1 대상은 심자2에 참여할 수 없습니다.", false, student);
                 return;
             }
 
@@ -86,45 +74,12 @@ public class DeviceService {
             LocalTime s1OutTimeAfterUpdate = attendanceTime.getS1OutTime();
 
             switch (logType) {
-                case "S1_IN" -> {
-                    logsRepository.save(Logs.builder()
-                            .action("S1 In")
-                            .message("S1 출석")
-                            .success(true)
-                            .student(student)
-                            .build());
-                }
-                case "S1_OUT" -> {
-                    logsRepository.save(Logs.builder()
-                            .action("S1 Out")
-                            .message("S1 복귀 출석")
-                            .success(true)
-                            .student(student)
-                            .build());
-                }
-                case "S2_IN" -> {
-                    logsRepository.save(Logs.builder()
-                            .action("S2 In")
-                            .message("S2 출석")
-                            .success(true)
-                            .student(student)
-                            .build());
-                }
-                case "S2_OUT" -> {
-                    logsRepository.save(Logs.builder()
-                            .action("S2 Out")
-                            .message("S2 복귀 출석")
-                            .success(true)
-                            .student(student)
-                            .build());
-                }
+                case "S1_IN" -> logsService.saveLog("S1 In", "S1 출석", true, student);
+                case "S1_OUT" -> logsService.saveLog("S1 Out", "S1 복귀 출석", true, student);
+                case "S2_IN" -> logsService.saveLog("S2 In", "S2 출석", true, student);
+                case "S2_OUT" -> logsService.saveLog("S2 Out", "S2 복귀 출석", true, student);
                 case "S1_IN_ALREADY" -> {
-                    logsRepository.save(Logs.builder()
-                            .action("S1 In - Already")
-                            .message("S1 출석은 이미 완료되었습니다.")
-                            .success(false)
-                            .student(student)
-                            .build());
+                    logsService.saveLog("S1 In - Already", "S1 출석은 이미 완료되었습니다.", false, student);
                     socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S1 출석은 이미 완료되었습니다.",
@@ -133,12 +88,7 @@ public class DeviceService {
                     return;
                 }
                 case "S1_OUT_NO_IN" -> {
-                    logsRepository.save(Logs.builder()
-                            .action("S1 Out - No In")
-                            .message("S1In이 null - 퇴실 불가")
-                            .success(false)
-                            .student(student)
-                            .build());
+                    logsService.saveLog("S1 Out - No In", "S1In이 null - 퇴실 불가", false, student);
                     socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S1In이 null - 퇴실 불가",
@@ -147,12 +97,7 @@ public class DeviceService {
                     return;
                 }
                 case "S1_OUT_ALREADY" -> {
-                    logsRepository.save(Logs.builder()
-                            .action("S1 Out - Already")
-                            .message("S1 퇴실은 이미 완료되었습니다.")
-                            .success(false)
-                            .student(student)
-                            .build());
+                    logsService.saveLog("S1 Out - Already", "S1 퇴실은 이미 완료되었습니다.", false, student);
                     socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S1 퇴실은 이미 완료되었습니다.",
@@ -161,12 +106,7 @@ public class DeviceService {
                     return;
                 }
                 case "S2_IN_NO_S1_OUT" -> {
-                    logsRepository.save(Logs.builder()
-                            .action("S2 In - No S1 Out")
-                            .message("S1을 끝내지 못했습니다.")
-                            .success(false)
-                            .student(student)
-                            .build());
+                    logsService.saveLog("S2 In - No S1 Out", "S1을 끝내지 못했습니다.", false, student);
                     socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S1을 끝내지 못했습니다.",
@@ -175,12 +115,7 @@ public class DeviceService {
                     return;
                 }
                 case "S2_IN_ALREADY" -> {
-                    logsRepository.save(Logs.builder()
-                            .action("S2 In - Already")
-                            .message("S2 출석은 이미 완료되었습니다.")
-                            .success(false)
-                            .student(student)
-                            .build());
+                    logsService.saveLog("S2 In - Already", "S2 출석은 이미 완료되었습니다.", false, student);
                     socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S2 출석은 이미 완료되었습니다.",
@@ -189,12 +124,7 @@ public class DeviceService {
                     return;
                 }
                 case "S2_OUT_NO_IN" -> {
-                    logsRepository.save(Logs.builder()
-                            .action("S2 Out - No In")
-                            .message("S2In이 null - 퇴실 불가")
-                            .success(false)
-                            .student(student)
-                            .build());
+                    logsService.saveLog("S2 Out - No In", "S2In이 null - 퇴실 불가", false, student);
                     socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S2In이 null - 퇴실 불가",
@@ -203,12 +133,7 @@ public class DeviceService {
                     return;
                 }
                 case "S2_OUT_ALREADY" -> {
-                    logsRepository.save(Logs.builder()
-                            .action("S2 Out - Already")
-                            .message("S2 퇴실은 이미 완료되었습니다.")
-                            .success(false)
-                            .student(student)
-                            .build());
+                    logsService.saveLog("S2 Out - Already", "S2 퇴실은 이미 완료되었습니다.", false, student);
                     socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "S2 퇴실은 이미 완료되었습니다.",
@@ -217,12 +142,7 @@ public class DeviceService {
                     return;
                 }
                 case "NO_UPDATE" -> {
-                    logsRepository.save(Logs.builder()
-                            .action("No Update")
-                            .message("유효하지 않은 출석 요청입니다.")
-                            .success(false)
-                            .student(student)
-                            .build());
+                    logsService.saveLog("No Update", "유효하지 않은 출석 요청입니다.", false, student);
                     socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                             "status", "FAILED",
                             "message", "유효하지 않은 출석 요청입니다.",
@@ -247,12 +167,7 @@ public class DeviceService {
             ));
         } catch (ApplicationException e) {
             Student student = studentRepository.findByStudentId(request.id()).orElse(null);
-            logsRepository.save(Logs.builder()
-                    .action("Exception")
-                    .message(e.getMessage())
-                    .success(false)
-                    .student(student)
-                    .build());
+            logsService.saveLog("Exception", e.getMessage(), false, student);
             socketIOServer.getRoomOperations(request.deviceId()).sendEvent("verify", Map.of(
                     "status", "FAILED",
                     "message", e.getMessage(),
@@ -295,21 +210,11 @@ public class DeviceService {
         switch (session) {
             case "SESSION_1" -> {
                 attendanceTime.setS1Status(request.newStatus());
-                logsRepository.save(Logs.builder()
-                        .action("S1 Status Update")
-                        .message("S1 상태 변경: " + request.newStatus())
-                        .success(true)
-                        .student(attendanceTime.getStudent())
-                        .build());
+                logsService.saveLog("S1 Status Update", "S1 상태 변경: " + request.newStatus(), true, attendanceTime.getStudent());
             }
             case "SESSION_2" -> {
                 attendanceTime.setS2Status(request.newStatus());
-                logsRepository.save(Logs.builder()
-                        .action("S2 Status Update")
-                        .message("S2 상태 변경: " + request.newStatus())
-                        .success(true)
-                        .student(attendanceTime.getStudent())
-                        .build());
+                logsService.saveLog("S2 Status Update", "S2 상태 변경: " + request.newStatus(), true, attendanceTime.getStudent());
             }
             default -> throw new ApplicationException(AttendanceTimeStatus.NOT_IN_ATTENDANCE_TIME);
         }
